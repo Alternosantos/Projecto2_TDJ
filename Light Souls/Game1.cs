@@ -13,6 +13,7 @@ namespace Light_Souls
         // We'll add our player, level, etc. here later
         private Player _player;
         private Level _level;
+        private Camera _camera;
 
         public PlatformerGame()
         {
@@ -36,18 +37,24 @@ namespace Light_Souls
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Create player texture (32x32 white square)
-            Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
-            Vector2 startPos = new Vector2(100, 100);
-            _player = new Player(playerTex, startPos);
-
-            // Create tile textures
+            // Create tile textures first
             Texture2D grassTex = CreateSolidTexture(32, 32, Color.Green);
             Texture2D dirtTex = CreateSolidTexture(32, 32, Color.Brown);
+
+            // Create level FIRST (so it exists for player start)
             _level = new Level(grassTex, dirtTex);
 
-            // Give the player the tile array from level
-            // (You'll need to modify Player.Update to accept tiles)
+            // Now create player using level's start position
+            Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
+            _player = new Player(playerTex, _level.PlayerStart);
+
+            // Create camera using level dimensions
+            _camera = new Camera(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight,
+                _level.WorldWidth,
+                _level.WorldHeight
+            );
         }
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
@@ -58,6 +65,7 @@ namespace Light_Souls
             return texture;
         }
 
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -66,7 +74,9 @@ namespace Light_Souls
 
             // Update game objects
             _player.Update(gameTime, _level.GetTiles());
-            _level?.Update(gameTime);
+            //_level?.Update(gameTime);
+            // Make camera follow player
+            _camera.Follow(_player.Position);
 
             base.Update(gameTime);
         }
@@ -75,9 +85,12 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            // Apply camera translation
+            _spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0));
+
             _level?.Draw(_spriteBatch);
             _player?.Draw(_spriteBatch);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
