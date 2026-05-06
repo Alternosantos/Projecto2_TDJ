@@ -9,9 +9,7 @@ namespace Light_Souls
         public Vector2 Position;
         public Vector2 Velocity;
         private Texture2D _texture;
-        private bool _isOnGround;
 
-        // Movement settings
         private float _moveSpeed = 300f;
         private float _jumpPower = -500f;
         private float _gravity = 1600f;
@@ -23,90 +21,107 @@ namespace Light_Souls
             Velocity = Vector2.Zero;
         }
 
-        public void Update(GameTime gameTime, Tile[,] tiles)
+        public void Update(GameTime gameTime, Tile?[,] tiles)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Input
             var keyboard = Keyboard.GetState();
             float moveX = 0;
-            if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
-                moveX = -1;
-            if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
-                moveX = 1;
-
-            // Horizontal movement
+            if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left)) moveX = -1;
+            if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right)) moveX = 1;
             Velocity.X = moveX * _moveSpeed;
 
+            // Horizontal movement & collision
+            Position.X += Velocity.X * deltaTime;
+            HandleHorizontalCollisions(tiles);
+
+            // Vertical movement & gravity
+            Velocity.Y += _gravity * deltaTime;
+            Position.Y += Velocity.Y * deltaTime;
+            HandleVerticalCollisions(tiles);
+
             // Jumping
-            _isOnGround = IsGrounded(tiles);
-            if ((keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up)) && _isOnGround)
+            if ((keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up)) && IsGrounded(tiles))
             {
                 Velocity.Y = _jumpPower;
             }
-
-            // Apply gravity
-            Velocity.Y += _gravity * deltaTime;
-
-            // Move and collide
-            Position += Velocity * deltaTime;
-            HandleCollisions(tiles);
         }
 
-        private bool IsGrounded(Tile[,] tiles)
+        private bool IsGrounded(Tile?[,] tiles)
         {
-            // Simple check: if the pixel just below the player is a solid tile
-            int playerFootY = (int)(Position.Y + _texture.Height);
-            int tileX = (int)(Position.X + _texture.Width / 2) / Tile.TileSize;
-            int tileY = playerFootY / Tile.TileSize;
+            int footY = (int)(Position.Y + _texture.Height);
+            int tileX = (int)(Position.X + _texture.Width / 2) / Tile.Width;
+            int tileY = footY / Tile.Height;
 
-            if (tileY >= 0 && tileY < tiles.GetLength(1) && tileX >= 0 && tileX < tiles.GetLength(0))
+            if (tileX >= 0 && tileX < tiles.GetLength(0) && tileY >= 0 && tileY < tiles.GetLength(1))
             {
-                return tiles[tileX, tileY]?.IsSolid == true && Velocity.Y >= 0;
+                var tile = tiles[tileX, tileY];
+                return tile.HasValue &&
+                       (tile.Value.Collision == TileCollision.Impassable || tile.Value.Collision == TileCollision.Platform) &&
+                       Velocity.Y >= 0;
             }
             return false;
         }
 
-        private void HandleCollisions(Tile[,] tiles)
+        private void HandleHorizontalCollisions(Tile?[,] tiles)
         {
-            // Simple AABB collision resolution (left/right/top/bottom)
             Rectangle playerRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
-
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
                 {
                     var tile = tiles[x, y];
-                    if (tile != null && tile.IsSolid)
+                    if (tile.HasValue && tile.Value.Collision == TileCollision.Impassable)
                     {
-                        Rectangle tileRect = new Rectangle(x * Tile.TileSize, y * Tile.TileSize, Tile.TileSize, Tile.TileSize);
+                        Rectangle tileRect = new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
                         if (playerRect.Intersects(tileRect))
                         {
-                            // Resolve collision by pushing player out
-                            Rectangle intersection = Rectangle.Intersect(playerRect, tileRect);
-                            if (intersection.Width < intersection.Height)
+                            if (playerRect.Center.X < tileRect.Center.X)
+                                Position.X = tileRect.Left - _texture.Width;
+                            else
+                                Position.X = tileRect.Right;
+                            Velocity.X = 0;
+                            playerRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void HandleVerticalCollisions(Tile?[,] tiles)
+        {
+            Rectangle playerRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+            for (int x = 0; x < tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < tiles.GetLength(1); y++)
+                {
+                    var tile = tiles[x, y];
+                    if (tile.HasValue && tile.Value.Collision != TileCollision.Passable)
+                    {
+                        Rectangle tileRect = new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
+                        if (playerRect.Intersects(tileRect))
+                        {
+                            // Platform: allow passing through when moving upward
+                            if (tile.Value.Collision == TileCollision.Platform && Velocity.Y < 0)
+                                continue;
+
+                            // Resolve collision
+                            if (playerRect.Center.Y < tileRect.Center.Y)
                             {
-                                // Left/right
-                                if (playerRect.Center.X < tileRect.Center.X)
-                                    Position.X -= intersection.Width;
-                                else
-                                    Position.X += intersection.Width;
+                                // Player is above the tile → land on top
+                                Position.Y = tileRect.Top - _texture.Height;
+                                Velocity.Y = 0;
                             }
                             else
                             {
-                                // Top/bottom
-                                if (playerRect.Center.Y < tileRect.Center.Y)
+                                // Player below tile (hitting head) – only for impassable
+                                if (tile.Value.Collision == TileCollision.Impassable)
                                 {
-                                    Position.Y -= intersection.Height;
-                                    Velocity.Y = 0; // Stop vertical movement
-                                }
-                                else
-                                {
-                                    Position.Y += intersection.Height;
+                                    Position.Y = tileRect.Bottom;
                                     Velocity.Y = 0;
                                 }
                             }
-                            // Update rectangle after position change
                             playerRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
                         }
                     }

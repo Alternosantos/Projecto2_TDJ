@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Reflection.Emit;
+using System.Collections.Generic;
 
 namespace Light_Souls
 {
@@ -13,6 +14,7 @@ namespace Light_Souls
         // We'll add our player, level, etc. here later
         private Player _player;
         private Level _level;
+        private Camera _camera;
 
         public PlatformerGame()
         {
@@ -36,18 +38,29 @@ namespace Light_Souls
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Create player texture (32x32 white square)
-            Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
-            Vector2 startPos = new Vector2(100, 100);
-            _player = new Player(playerTex, startPos);
-
-            // Create tile textures
+            // Create tile textures first
             Texture2D grassTex = CreateSolidTexture(32, 32, Color.Green);
             Texture2D dirtTex = CreateSolidTexture(32, 32, Color.Brown);
-            _level = new Level(grassTex, dirtTex);
+            //Creates enemys
+            Texture2D enemyTex = CreateSolidTexture(32, 32, Color.Red);
 
-            // Give the player the tile array from level
-            // (You'll need to modify Player.Update to accept tiles)
+            // Create level FIRST (so it exists for player start)
+            _level = new Level(grassTex, dirtTex, enemyTex);
+
+            // Now create player using level's start position
+            Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
+            _player = new Player(playerTex, _level.PlayerStart);
+
+            
+
+            // Create camera using level dimensions
+            _camera = new Camera(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight,
+                _level.WorldWidth,
+                _level.WorldHeight
+            );
+
         }
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
@@ -58,6 +71,7 @@ namespace Light_Souls
             return texture;
         }
 
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -66,7 +80,14 @@ namespace Light_Souls
 
             // Update game objects
             _player.Update(gameTime, _level.GetTiles());
-            _level?.Update(gameTime);
+            //_level?.Update(gameTime);
+            // Make camera follow player
+            _camera.Follow(_player.Position);
+
+            foreach (var enemy in _level.Enemies)
+            {
+                enemy.Update(gameTime, _level.GetTiles());
+            }
 
             base.Update(gameTime);
         }
@@ -75,10 +96,29 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
-            _level?.Draw(_spriteBatch);
-            _player?.Draw(_spriteBatch);
-            _spriteBatch.End();
+            // Begin with camera transform
+            _spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0));
+
+            try
+            {
+                _level?.Draw(_spriteBatch);
+
+                // Safely draw enemies (check that _level and Enemies exist)
+                if (_level != null && _level.Enemies != null)
+                {
+                    foreach (var enemy in _level.Enemies)
+                    {
+                        enemy.Draw(_spriteBatch);
+                    }
+                }
+
+                _player?.Draw(_spriteBatch);
+            }
+            finally
+            {
+                // Always end the sprite batch, even if an error occurred
+                _spriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }
