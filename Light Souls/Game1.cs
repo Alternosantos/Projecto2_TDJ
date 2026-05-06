@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Reflection.Emit;
+using System.Collections.Generic;
 
 namespace Light_Souls
 {
@@ -40,13 +41,17 @@ namespace Light_Souls
             // Create tile textures first
             Texture2D grassTex = CreateSolidTexture(32, 32, Color.Green);
             Texture2D dirtTex = CreateSolidTexture(32, 32, Color.Brown);
+            //Creates enemys
+            Texture2D enemyTex = CreateSolidTexture(32, 32, Color.Red);
 
             // Create level FIRST (so it exists for player start)
-            _level = new Level(grassTex, dirtTex);
+            _level = new Level(grassTex, dirtTex, enemyTex);
 
             // Now create player using level's start position
             Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
             _player = new Player(playerTex, _level.PlayerStart);
+
+            
 
             // Create camera using level dimensions
             _camera = new Camera(
@@ -55,6 +60,7 @@ namespace Light_Souls
                 _level.WorldWidth,
                 _level.WorldHeight
             );
+
         }
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
@@ -78,6 +84,11 @@ namespace Light_Souls
             // Make camera follow player
             _camera.Follow(_player.Position);
 
+            foreach (var enemy in _level.Enemies)
+            {
+                enemy.Update(gameTime, _level.GetTiles());
+            }
+
             base.Update(gameTime);
         }
 
@@ -85,13 +96,29 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // Apply camera translation
+            // Begin with camera transform
             _spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0));
 
-            _level?.Draw(_spriteBatch);
-            _player?.Draw(_spriteBatch);
+            try
+            {
+                _level?.Draw(_spriteBatch);
 
-            _spriteBatch.End();
+                // Safely draw enemies (check that _level and Enemies exist)
+                if (_level != null && _level.Enemies != null)
+                {
+                    foreach (var enemy in _level.Enemies)
+                    {
+                        enemy.Draw(_spriteBatch);
+                    }
+                }
+
+                _player?.Draw(_spriteBatch);
+            }
+            finally
+            {
+                // Always end the sprite batch, even if an error occurred
+                _spriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }
