@@ -126,6 +126,11 @@ namespace Light_Souls
                 _direction = -_direction;
             }
         }
+        public bool CollidesWith(Rectangle playerBounds)
+        {
+            Rectangle enemyBounds = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+            return enemyBounds.Intersects(playerBounds);
+        }
 
         public void Draw(SpriteBatch spriteBatch)
         {

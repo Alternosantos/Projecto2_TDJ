@@ -21,8 +21,20 @@ namespace Light_Souls
             Velocity = Vector2.Zero;
         }
 
+        private float _invincibleTimer = 0f;
+        public bool IsInvincible => _invincibleTimer > 0f;
+
+        public void TakeHit()
+        {
+            if (IsInvincible) return;
+            _invincibleTimer = 0.5f; // half second invincibility
+                                     // Also reset position? We'll handle reset in game class.
+        }
+
         public void Update(GameTime gameTime, Tile?[,] tiles)
         {
+            if (_invincibleTimer > 0)
+                _invincibleTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Input
@@ -62,6 +74,11 @@ namespace Light_Souls
                        Velocity.Y >= 0;
             }
             return false;
+        }
+
+        public Rectangle GetBounds()
+        {
+            return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
         }
 
         private void HandleHorizontalCollisions(Tile?[,] tiles)
@@ -131,6 +148,8 @@ namespace Light_Souls
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (IsInvincible && (int)(_invincibleTimer * 30) % 2 == 0)
+                return; // skip drawing (blink)
             spriteBatch.Draw(_texture, Position, Color.White);
         }
     }
