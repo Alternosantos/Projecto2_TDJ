@@ -74,21 +74,41 @@ namespace Light_Souls
 
         protected override void Update(GameTime gameTime)
         {
+            // Exit check
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Update game objects
+            // Update player and enemies
             _player.Update(gameTime, _level.GetTiles());
-            //_level?.Update(gameTime);
-            // Make camera follow player
-            _camera.Follow(_player.Position);
-
             foreach (var enemy in _level.Enemies)
             {
                 enemy.Update(gameTime, _level.GetTiles());
             }
 
+            // Enemy-player collision
+            Rectangle playerBounds = _player.GetBounds();
+            foreach (var enemy in _level.Enemies)
+            {
+                if (enemy.CollidesWith(playerBounds))
+                {
+                    if (!_player.IsInvincible)
+                    {
+                        _player.Position = _level.PlayerStart;
+                        _player.Velocity = Vector2.Zero;
+                        _player.TakeHit();
+                    }
+                }
+                if (enemy.CollidesWith(playerBounds))
+                {
+                    // Reset player position and velocity
+                    _player.Position = _level.PlayerStart;
+                    _player.Velocity = Vector2.Zero;
+                    break; // only need to reset once per frame
+                }
+            }
+
+            _camera.Follow(_player.Position);
             base.Update(gameTime);
         }
 
