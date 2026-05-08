@@ -32,3 +32,39 @@ C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\refint\Light So
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.pdb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.genruntimeconfig.cache
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\ref\Light Souls.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\mgcb.tool.restore
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.AssemblyReference.cache
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfoInputs.cache
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfo.cs
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.CoreCompileInputs.cache
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.sourcelink.json
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\refint\Light Souls.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.pdb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.exe
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.deps.json
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.runtimeconfig.json
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.pdb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\MonoGame.Framework.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\NVorbis.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm64\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x64\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x86\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\ios-arm64\native\libopenal.a
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-arm64\native\libopenal.a
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-x64\native\libopenal.a
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-arm64\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libopenal.so
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libopenal.dylib
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\openal.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libSDL2-2.0.so.0
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libSDL2-2.0.0.dylib
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\SDL2.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light So.999DFBD3.Up2Date
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.genruntimeconfig.cache
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\ref\Light Souls.dll
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer0.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb

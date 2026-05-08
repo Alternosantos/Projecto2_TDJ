@@ -1,11 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 
 namespace Light_Souls
 {
+    public static class Globals
+    {
+        public static float ElapsedSeconds { get; set; }
+        public static SpriteBatch SpriteBatch { get; set; }
+        public static ContentManager Content { get; set; }
+    }
+
     public class PlatformerGame : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -15,6 +23,9 @@ namespace Light_Souls
         private Player _player;
         private Level _level;
         private Camera _camera;
+
+        private GameManager _gameManager;
+        private BGManager _bgManager;
 
         public PlatformerGame()
         {
@@ -61,6 +72,10 @@ namespace Light_Souls
                 _level.WorldHeight
             );
 
+            Globals.SpriteBatch = _spriteBatch;
+            Globals.Content = Content;
+            _gameManager = new GameManager();
+
         }
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
@@ -74,9 +89,14 @@ namespace Light_Souls
 
         protected override void Update(GameTime gameTime)
         {
+
+            Globals.ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            _gameManager?.Update();
 
             // Update game objects
             _player.Update(gameTime, _level.GetTiles());
@@ -96,14 +116,23 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // Begin with camera transform
-            _spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0));
+            // --- BLOCO 1: FUNDO ---
+            _spriteBatch.Begin();
+            // Em vez de _bgManager, usa o _gameManager que contém o fundo e o input!
+            _gameManager?.Draw();
+            _spriteBatch.End();
+
+            // --- BLOCO 2: MUNDO (Com Câmera) ---
+            // Aqui calculamos a matriz apenas UMA vez
+            var cameraMatrix = Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0);
+
+            // Abrimos o Begin com a matriz
+            _spriteBatch.Begin(transformMatrix: cameraMatrix);
 
             try
             {
                 _level?.Draw(_spriteBatch);
 
-                // Safely draw enemies (check that _level and Enemies exist)
                 if (_level != null && _level.Enemies != null)
                 {
                     foreach (var enemy in _level.Enemies)
@@ -116,7 +145,7 @@ namespace Light_Souls
             }
             finally
             {
-                // Always end the sprite batch, even if an error occurred
+                // Fecha o bloco da câmera
                 _spriteBatch.End();
             }
 
