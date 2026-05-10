@@ -1,101 +1,117 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace Light_Souls
 {
     public class Level
     {
-        private Tile?[,] _tiles;
-        private int _width, _height;  // in tiles
-        private Texture2D _grassTexture, _dirtTexture;
-
         public Vector2 PlayerStart { get; private set; }
+        public List<Platform> Platforms { get; private set; }
         public List<Enemy> Enemies { get; private set; }
+        public List<FlyingEnemy> FlyingEnemies { get; private set; }
+        public List<ChasingEnemy> ChasingEnemies { get; private set; }
         public List<Coin> Coins { get; private set; }
-        public int TotalCoins => Coins.Count;
-        public int RemainingCoins => Coins.Count(c => !c.IsCollected);
 
-        public int WorldWidth => _width * Tile.Width;
-        public int WorldHeight => _height * Tile.Height;
+        public int WorldWidth { get; private set; }
+        public int WorldHeight { get; private set; }
 
-        public Level(Texture2D grassTex, Texture2D dirtTex, Texture2D enemyTex, Texture2D coinTex, string levelPath)
+        public int RemainingCoins
         {
-            _grassTexture = grassTex;
-            _dirtTexture = dirtTex;
-            PlayerStart = Vector2.Zero;
-
-            Coins = new List<Coin>();
-
-            string[] map = System.IO.File.ReadAllLines(levelPath);
-
-            _height = map.Length;
-            _width = 0;
-            for (int i = 0; i < _height; i++)
-                if (map[i].Length > _width) _width = map[i].Length;
-
-            _tiles = new Tile?[_width, _height];
-
-            Enemies = new List<Enemy>();
-
-            for (int y = 0; y < _height; y++)
+            get
             {
-                for (int x = 0; x < _width; x++)
-                {
-                    char c = (x < map[y].Length) ? map[y][x] : '.';
-                    if (c == 'P')
-                    {
-                        PlayerStart = new Vector2(x * Tile.Width, y * Tile.Height);
-                        _tiles[x, y] = null;
-                    }
-                    else if (c == 'E')
-                    {
-                        // Create enemy at this tile position
-                        Vector2 enemyPos = new Vector2(x * Tile.Width, y * Tile.Height);
-                        Enemies.Add(new Enemy(enemyTex, enemyPos));
-                        _tiles[x, y] = null; 
-                    }
-                    else if (c == '#')
-                    {
-                        _tiles[x, y] = new Tile(_dirtTexture, TileCollision.Impassable);
-                    }
-                    else if (c == '=')
-                    {
-                        _tiles[x, y] = new Tile(_grassTexture, TileCollision.Platform);
-                    }
-                    else if (c == 'C')
-                    {
-                        Vector2 coinPos = new Vector2(x * Tile.Width, y * Tile.Height);
-                        Coins.Add(new Coin(coinTex, coinPos));
-                        _tiles[x, y] = null; // coin tile is empty
-                    }
-                    else
-                    {
-                        _tiles[x, y] = null;
-                    }
-                }
+                int count = 0;
+                foreach (var coin in Coins)
+                    if (!coin.IsCollected) count++;
+                return count;
             }
         }
 
-        public Tile?[,] GetTiles() => _tiles;
+        private Texture2D _platformTexture;
+
+        // Construtor recebe texturas e o caminho do ficheiro de nível
+        public Level(Texture2D platformTexture, Texture2D enemyTex, Texture2D coinTex, string levelPath)
+        {
+            _platformTexture = platformTexture;
+            Platforms = new List<Platform>();
+            Enemies = new List<Enemy>();
+            FlyingEnemies = new List<FlyingEnemy>();
+            ChasingEnemies = new List<ChasingEnemy>();
+            Coins = new List<Coin>();
+
+            string[] lines = File.ReadAllLines(levelPath);
+
+            foreach (string line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//")) continue;
+                string[] parts = line.Split(' ');
+                string type = parts[0];
+
+                switch (type)
+                {
+                    case "START":
+                        float startX = float.Parse(parts[1]);
+                        float startY = float.Parse(parts[2]);
+                        PlayerStart = new Vector2(startX, startY);
+                        break;
+
+                    case "PLATFORM":
+                        int x = int.Parse(parts[1]);
+                        int y = int.Parse(parts[2]);
+                        int w = int.Parse(parts[3]);
+                        int h = int.Parse(parts[4]);
+                        Platforms.Add(new Platform(new Rectangle(x, y, w, h)));
+                        break;
+
+                    case "ENEMY":
+                        float ex = float.Parse(parts[1]);
+                        float ey = float.Parse(parts[2]);
+                        Enemies.Add(new Enemy(enemyTex, new Vector2(ex, ey)));
+                        break;
+
+                    case "FLYING":
+                        float fx = float.Parse(parts[1]);
+                        float fy = float.Parse(parts[2]);
+                        float left = float.Parse(parts[3]);
+                        float right = float.Parse(parts[4]);
+                        FlyingEnemies.Add(new FlyingEnemy(enemyTex, new Vector2(fx, fy), left, right));
+                        break;
+
+                    case "CHASING":
+                        float cx = float.Parse(parts[1]);
+                        float cy = float.Parse(parts[2]);
+                        ChasingEnemies.Add(new ChasingEnemy(enemyTex, new Vector2(cx, cy)));
+                        break;
+
+                    case "COIN":
+                        float cox = float.Parse(parts[1]);
+                        float coy = float.Parse(parts[2]);
+                        Coins.Add(new Coin(coinTex, new Vector2(cox, coy)));
+                        break;
+                }
+            }
+
+
+            // Calcular a largura do mundo (para a câmara)
+            WorldWidth = 0;
+            WorldHeight = 480; // valor padrão, pode ajustar
+            foreach (var p in Platforms)
+                WorldWidth = System.Math.Max(WorldWidth, p.Bounds.Right);
+            foreach (var e in Enemies)
+                WorldWidth = System.Math.Max(WorldWidth, (int)e.Position.X + 32);
+            foreach (var f in FlyingEnemies)
+                WorldWidth = System.Math.Max(WorldWidth, (int)f.Position.X + 32);
+            foreach (var c in ChasingEnemies)
+                WorldWidth = System.Math.Max(WorldWidth, (int)c.Position.X + 32);
+            foreach (var c in Coins)
+                WorldWidth = System.Math.Max(WorldWidth, (int)c.Position.X + 24);
+        }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for (int x = 0; x < _width; x++)
-            {
-                for (int y = 0; y < _height; y++)
-                {
-                    var tile = _tiles[x, y];
-                    if (tile.HasValue)
-                    {
-                        spriteBatch.Draw(tile.Value.Texture,
-                            new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height),
-                            Color.White);
-                    }
-                }
-            }
+            foreach (var platform in Platforms)
+                platform.Draw(spriteBatch, _platformTexture);
         }
     }
 }

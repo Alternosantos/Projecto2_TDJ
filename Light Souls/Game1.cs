@@ -2,41 +2,33 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using System;
 using System.Collections.Generic;
 
 namespace Light_Souls
 {
-    public static class Globals
-    {
-        public static float ElapsedSeconds { get; set; }
-        public static SpriteBatch SpriteBatch { get; set; }
-        public static ContentManager Content { get; set; }
-    }
-
     public class PlatformerGame : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
         private Player _player;
         private Level _level;
         private Camera _camera;
 
-        private GameManager _gameManager;
-        private BGManager _bgManager;
-
-        // FIX 1: Textures are now class-level fields so LoadLevel() can access them
-        private Texture2D _grassTex;
-        private Texture2D _dirtTex;
+        // Textures
+        private Texture2D _platformTexture;
+        private Texture2D _playerTex;
         private Texture2D _enemyTex;
         private Texture2D _coinTex;
-        private Texture2D _playerTex;
+        private Texture2D _backgroundTexture;
 
         private int _currentLevelIndex = 0;
         private string[] _levelFiles = new string[]
         {
             "Content/Levels/Level1.txt",
-            "Content/Levels/Level2.txt"
+            "Content/Levels/Level2.txt",
+            "Content/Levels/Level3.txt",
+            "Content/Levels/Level4.txt"
         };
 
         public PlatformerGame()
@@ -44,7 +36,6 @@ namespace Light_Souls
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 480;
             _graphics.ApplyChanges();
@@ -57,8 +48,7 @@ namespace Light_Souls
 
         private void LoadLevel(int index)
         {
-            // FIX 2: Now works correctly because textures are fields, not locals
-            _level = new Level(_grassTex, _dirtTex, _enemyTex, _coinTex, _levelFiles[index]);
+            _level = new Level(_platformTexture, _enemyTex, _coinTex, _levelFiles[index]);
             _player = new Player(_playerTex, _level.PlayerStart);
             _camera = new Camera(
                 _graphics.PreferredBackBufferWidth,
@@ -68,24 +58,28 @@ namespace Light_Souls
             );
         }
 
+        private void LoadNextLevel()
+        {
+            _currentLevelIndex++;
+            if (_currentLevelIndex < _levelFiles.Length)
+                LoadLevel(_currentLevelIndex);
+            else
+                Exit();
+        }
+
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // FIX 3: Assign to fields instead of local variables
-            _grassTex = CreateSolidTexture(32, 32, Color.Green);
-            _dirtTex = CreateSolidTexture(32, 32, Color.Brown);
+            // Create textures
+            _platformTexture = CreateSolidTexture(1, 1, Color.Gray);
+            _playerTex = CreateSolidTexture(32, 32, Color.Green);
             _enemyTex = CreateSolidTexture(32, 32, Color.Red);
             _coinTex = CreateSolidTexture(24, 24, Color.Yellow);
-            _playerTex = CreateSolidTexture(32, 32, Color.Green);
 
-            // FIX 4: Removed the duplicate Level/Player/Camera creation that was here.
-            // LoadLevel() handles all of that cleanly.
+            _backgroundTexture = Content.Load<Texture2D>("Background/Layer1");
+
             LoadLevel(0);
-
-            Globals.SpriteBatch = _spriteBatch;
-            Globals.Content = Content;
-            _gameManager = new GameManager();
         }
 
         private Texture2D CreateSolidTexture(int width, int height, Color color)
@@ -99,22 +93,25 @@ namespace Light_Souls
 
         protected override void Update(GameTime gameTime)
         {
-            Globals.ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _gameManager?.Update();
+            // Update player
+            _player.Update(gameTime, _level.Platforms, _level.Enemies, _level.FlyingEnemies, _level.ChasingEnemies);
 
-            _player.Update(gameTime, _level.GetTiles());
+            // Update all enemies
             foreach (var enemy in _level.Enemies)
-            {
-                enemy.Update(gameTime, _level.GetTiles());
-            }
+                enemy.Update(gameTime, _level.Platforms);
+            foreach (var flying in _level.FlyingEnemies)
+                flying.Update(gameTime, _level.Platforms);
+            foreach (var chasing in _level.ChasingEnemies)
+                chasing.Update(gameTime, _level.Platforms, _player);
 
-            // Enemy-player collision
+            // Check collisions with ALL enemies
             Rectangle playerBounds = _player.GetBounds();
+
+            // Normal enemies
             foreach (var enemy in _level.Enemies)
             {
                 if (enemy.CollidesWith(playerBounds))
@@ -125,11 +122,41 @@ namespace Light_Souls
                         _player.Velocity = Vector2.Zero;
                         _player.TakeHit();
                     }
-                    break; // only need to reset once per frame
+                    break;  // only reset once per frame
                 }
             }
 
-            // Coin collection
+            // Flying enemies
+            foreach (var flying in _level.FlyingEnemies)
+            {
+                if (flying.CollidesWith(playerBounds))
+                {
+                    if (!_player.IsInvincible)
+                    {
+                        _player.Position = _level.PlayerStart;
+                        _player.Velocity = Vector2.Zero;
+                        _player.TakeHit();
+                    }
+                    break;
+                }
+            }
+
+            // Chasing enemies
+            foreach (var chasing in _level.ChasingEnemies)
+            {
+                if (chasing.CollidesWith(playerBounds))
+                {
+                    if (!_player.IsInvincible)
+                    {
+                        _player.Position = _level.PlayerStart;
+                        _player.Velocity = Vector2.Zero;
+                        _player.TakeHit();
+                    }
+                    break;
+                }
+            }
+
+            // Collect coins
             _player.CollectCoins(_level.Coins);
 
             // Level completion
@@ -147,30 +174,45 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // Background (no camera)
+            // 1. Draw background with parallax
+            float parallaxFactor = 0.5f;
+            float bgWidth = _backgroundTexture.Width;
+            float bgHeight = _backgroundTexture.Height;
+            float screenWidth = GraphicsDevice.Viewport.Width;
+            float screenHeight = GraphicsDevice.Viewport.Height;
+
+            float scale = screenWidth / bgWidth;
+            float scaledHeight = bgHeight * scale;
+            float startX = -_camera.Position.X * parallaxFactor;
+            float yOffset = (screenHeight - scaledHeight) / 2;
+
             _spriteBatch.Begin();
-            _gameManager?.Draw();
+            int tilesNeeded = (int)Math.Ceiling(screenWidth / (bgWidth * scale)) + 2;
+            for (int i = 0; i < tilesNeeded; i++)
+            {
+                Vector2 pos = new Vector2(startX + i * bgWidth * scale, yOffset);
+                Rectangle destRect = new Rectangle((int)pos.X, (int)pos.Y, (int)(bgWidth * scale), (int)scaledHeight);
+                _spriteBatch.Draw(_backgroundTexture, destRect, Color.White);
+            }
             _spriteBatch.End();
 
-            // World with camera
+            // 2. Draw game world with camera
             var cameraMatrix = Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0);
             _spriteBatch.Begin(transformMatrix: cameraMatrix);
             try
             {
                 _level?.Draw(_spriteBatch);
 
-                if (_level?.Enemies != null)
-                {
-                    foreach (var enemy in _level.Enemies)
-                        enemy.Draw(_spriteBatch);
-                }
+                // Draw all enemies
+                foreach (var enemy in _level.Enemies)
+                    enemy.Draw(_spriteBatch);
+                foreach (var flying in _level.FlyingEnemies)
+                    flying.Draw(_spriteBatch);
+                foreach (var chasing in _level.ChasingEnemies)
+                    chasing.Draw(_spriteBatch);
 
-                // ✅ ADD THIS: draw coins
-                if (_level?.Coins != null)
-                {
-                    foreach (var coin in _level.Coins)
-                        coin.Draw(_spriteBatch);
-                }
+                foreach (var coin in _level.Coins)
+                    coin.Draw(_spriteBatch);
 
                 _player?.Draw(_spriteBatch);
             }
@@ -180,15 +222,6 @@ namespace Light_Souls
             }
 
             base.Draw(gameTime);
-        }
-
-        private void LoadNextLevel()
-        {
-            _currentLevelIndex++;
-            if (_currentLevelIndex < _levelFiles.Length)
-                LoadLevel(_currentLevelIndex);
-            else
-                Exit();
         }
     }
 }

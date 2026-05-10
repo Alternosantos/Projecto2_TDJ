@@ -4,45 +4,78 @@ using System.Collections.Generic;
 
 namespace Light_Souls
 {
-    public class Enemy
+    public class ChasingEnemy
     {
         public Vector2 Position;
         public Vector2 Velocity;
         private Texture2D _texture;
-        private float _moveSpeed = 100f;
+        private float _walkSpeed = 70f;
+        private float _chaseSpeed = 100f;
         private float _gravity = 1200f;
         private int _direction = 1;
+        private float _aggroRange = 100f;
+        private float _stunTimer = 0f;
+        private bool _isStunned = false;
 
-        public Enemy(Texture2D texture, Vector2 startPosition)
+        public ChasingEnemy(Texture2D texture, Vector2 startPosition)
         {
             _texture = texture;
             Position = startPosition;
             Velocity = Vector2.Zero;
         }
 
-        public void Update(GameTime gameTime, List<Platform> platforms)
+        public void Update(GameTime gameTime, List<Platform> platforms, Player player)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Aplica velocidade de empurrão (ex: do stomp)
+            // Aplica empurrão (velocidade do stomp)
             Position.X += Velocity.X * deltaTime;
             Position.Y += Velocity.Y * deltaTime;
 
-            // Movimento normal
-            Velocity.X = _direction * _moveSpeed;
+            if (_isStunned)
+            {
+                _stunTimer -= deltaTime;
+                if (_stunTimer <= 0)
+                {
+                    _isStunned = false;
+                }
+                else
+                {
+                    // Durante stun, só gravidade e colisões verticais (não anda)
+                    Velocity.Y += _gravity * deltaTime;
+                    Position.Y += Velocity.Y * deltaTime;
+                    HandleVerticalCollisions(platforms);
+                    Velocity.X = 0;
+                    return;
+                }
+            }
+
+            // Decidir velocidade (perseguição ou patrulha)
+            float distanceToPlayer = player.Position.X - Position.X;
+            bool playerIsClose = System.Math.Abs(distanceToPlayer) < _aggroRange;
+
+            if (playerIsClose)
+            {
+                if (distanceToPlayer > 0) _direction = 1;
+                else _direction = -1;
+                Velocity.X = _direction * _chaseSpeed;
+            }
+            else
+            {
+                Velocity.X = _direction * _walkSpeed;
+            }
+
             Position.X += Velocity.X * deltaTime;
             HandleHorizontalCollisions(platforms);
 
-            // Gravidade
             Velocity.Y += _gravity * deltaTime;
             Position.Y += Velocity.Y * deltaTime;
             HandleVerticalCollisions(platforms);
 
-            CheckTurnAround(platforms);
+            if (!playerIsClose)
+                CheckTurnAround(platforms);
 
-            // Amortecimento da velocidade extra
             Velocity.X *= 0.95f;
-            Velocity.Y *= 0.95f;
             
             if (Position.Y > 800) 
             {
@@ -62,7 +95,8 @@ namespace Light_Souls
                         Position.X = platform.Bounds.Left - _texture.Width;
                     else if (Velocity.X < 0)
                         Position.X = platform.Bounds.Right;
-                    _direction = -_direction;
+                    if (System.Math.Abs(Velocity.X) == _walkSpeed)
+                        _direction = -_direction;
                     Velocity.X = 0;
                     break;
                 }
@@ -107,21 +141,27 @@ namespace Light_Souls
             if (!hasGround)
                 _direction = -_direction;
         }
-        public void FlipDirection()
+
+        public void Stun(float duration = 1.5f)
         {
-            _direction = -_direction;
-            Velocity.X = 0; 
+            _isStunned = true;
+            _stunTimer = duration;
+            Velocity.X = 0;
+        }
+
+        public Rectangle GetBounds()
+        {
+            return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
         }
 
         public bool CollidesWith(Rectangle playerBounds)
         {
-            Rectangle enemyBounds = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
-            return enemyBounds.Intersects(playerBounds);
+            return GetBounds().Intersects(playerBounds);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position, Color.Red);
+            spriteBatch.Draw(_texture, Position, Color.Orange);
         }
     }
 }

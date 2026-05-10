@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Light_Souls;
 
 namespace Light_Souls
 {
@@ -26,9 +27,6 @@ namespace Light_Souls
 
             // Movimentação
             _position.X += movement * _movescale * Globals.ElapsedSeconds;
-
-            // Wrap Suave: 
-            // Isto garante que a _position.X esteja sempre entre 0 e -adjustedWidth
             _position.X %= adjustedWidth;
         }
 
