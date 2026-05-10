@@ -70,3 +70,5 @@ C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Conte
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer0.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level1.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level2.txt

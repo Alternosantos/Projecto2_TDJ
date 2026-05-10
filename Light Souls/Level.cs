@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Light_Souls
 {
@@ -13,30 +14,28 @@ namespace Light_Souls
 
         public Vector2 PlayerStart { get; private set; }
         public List<Enemy> Enemies { get; private set; }
+        public List<Coin> Coins { get; private set; }
+        public int TotalCoins => Coins.Count;
+        public int RemainingCoins => Coins.Count(c => !c.IsCollected);
+
         public int WorldWidth => _width * Tile.Width;
         public int WorldHeight => _height * Tile.Height;
 
-        public Level(Texture2D grassTex, Texture2D dirtTex, Texture2D enemyTex)
+        public Level(Texture2D grassTex, Texture2D dirtTex, Texture2D enemyTex, Texture2D coinTex, string levelPath)
         {
             _grassTexture = grassTex;
             _dirtTexture = dirtTex;
             PlayerStart = Vector2.Zero;
-            
 
-            // Example map – replace with your own
-            string[] map = new string[]
-            {
-                "................................",
-                "........................P.......",
-                ".........E.........===..........",
-                "........####....................",
-                "...................###..........",
-                "########.....E.......###........",
-                "##############################.."
-            };
+            Coins = new List<Coin>();
+
+            string[] map = System.IO.File.ReadAllLines(levelPath);
 
             _height = map.Length;
-            _width = map[0].Length;
+            _width = 0;
+            for (int i = 0; i < _height; i++)
+                if (map[i].Length > _width) _width = map[i].Length;
+
             _tiles = new Tile?[_width, _height];
 
             Enemies = new List<Enemy>();
@@ -45,7 +44,7 @@ namespace Light_Souls
             {
                 for (int x = 0; x < _width; x++)
                 {
-                    char c = map[y][x];
+                    char c = (x < map[y].Length) ? map[y][x] : '.';
                     if (c == 'P')
                     {
                         PlayerStart = new Vector2(x * Tile.Width, y * Tile.Height);
@@ -56,8 +55,7 @@ namespace Light_Souls
                         // Create enemy at this tile position
                         Vector2 enemyPos = new Vector2(x * Tile.Width, y * Tile.Height);
                         Enemies.Add(new Enemy(enemyTex, enemyPos));
-                        _tiles[x, y] = null; // no tile underneath (place enemies on top of existing ground)
-                                             // But careful: you may want a solid tile below E. Better to place E above ground.
+                        _tiles[x, y] = null; 
                     }
                     else if (c == '#')
                     {
@@ -66,6 +64,12 @@ namespace Light_Souls
                     else if (c == '=')
                     {
                         _tiles[x, y] = new Tile(_grassTexture, TileCollision.Platform);
+                    }
+                    else if (c == 'C')
+                    {
+                        Vector2 coinPos = new Vector2(x * Tile.Width, y * Tile.Height);
+                        Coins.Add(new Coin(coinTex, coinPos));
+                        _tiles[x, y] = null; // coin tile is empty
                     }
                     else
                     {

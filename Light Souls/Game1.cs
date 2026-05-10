@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
-using System.Reflection.Emit;
 using System.Collections.Generic;
 
 namespace Light_Souls
@@ -19,7 +18,6 @@ namespace Light_Souls
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        // We'll add our player, level, etc. here later
         private Player _player;
         private Level _level;
         private Camera _camera;
@@ -27,56 +25,69 @@ namespace Light_Souls
         private GameManager _gameManager;
         private BGManager _bgManager;
 
+        // FIX 1: Textures are now class-level fields so LoadLevel() can access them
+        private Texture2D _grassTex;
+        private Texture2D _dirtTex;
+        private Texture2D _enemyTex;
+        private Texture2D _coinTex;
+        private Texture2D _playerTex;
+
+        private int _currentLevelIndex = 0;
+        private string[] _levelFiles = new string[]
+        {
+            "Content/Levels/Level1.txt",
+            "Content/Levels/Level2.txt"
+        };
+
         public PlatformerGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            // Set window size (optional)
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 480;
             _graphics.ApplyChanges();
         }
-
 
         protected override void Initialize()
         {
             base.Initialize();
         }
 
-        protected override void LoadContent()
+        private void LoadLevel(int index)
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // Create tile textures first
-            Texture2D grassTex = CreateSolidTexture(32, 32, Color.Green);
-            Texture2D dirtTex = CreateSolidTexture(32, 32, Color.Brown);
-            //Creates enemys
-            Texture2D enemyTex = CreateSolidTexture(32, 32, Color.Red);
-
-            // Create level FIRST (so it exists for player start)
-            _level = new Level(grassTex, dirtTex, enemyTex);
-
-            // Now create player using level's start position
-            Texture2D playerTex = CreateSolidTexture(32, 32, Color.Green);
-            _player = new Player(playerTex, _level.PlayerStart);
-
-            
-
-            // Create camera using level dimensions
+            // FIX 2: Now works correctly because textures are fields, not locals
+            _level = new Level(_grassTex, _dirtTex, _enemyTex, _coinTex, _levelFiles[index]);
+            _player = new Player(_playerTex, _level.PlayerStart);
             _camera = new Camera(
                 _graphics.PreferredBackBufferWidth,
                 _graphics.PreferredBackBufferHeight,
                 _level.WorldWidth,
                 _level.WorldHeight
             );
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // FIX 3: Assign to fields instead of local variables
+            _grassTex = CreateSolidTexture(32, 32, Color.Green);
+            _dirtTex = CreateSolidTexture(32, 32, Color.Brown);
+            _enemyTex = CreateSolidTexture(32, 32, Color.Red);
+            _coinTex = CreateSolidTexture(24, 24, Color.Yellow);
+            _playerTex = CreateSolidTexture(32, 32, Color.Green);
+
+            // FIX 4: Removed the duplicate Level/Player/Camera creation that was here.
+            // LoadLevel() handles all of that cleanly.
+            LoadLevel(0);
 
             Globals.SpriteBatch = _spriteBatch;
             Globals.Content = Content;
             _gameManager = new GameManager();
-
         }
+
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
             Texture2D texture = new Texture2D(GraphicsDevice, width, height);
@@ -86,26 +97,15 @@ namespace Light_Souls
             return texture;
         }
 
-
         protected override void Update(GameTime gameTime)
         {
-
-            // Exit check
-
-
             Globals.ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
-            // Update player and enemies
-
             _gameManager?.Update();
-
-            // Update game objects
 
             _player.Update(gameTime, _level.GetTiles());
             foreach (var enemy in _level.Enemies)
@@ -125,14 +125,18 @@ namespace Light_Souls
                         _player.Velocity = Vector2.Zero;
                         _player.TakeHit();
                     }
-                }
-                if (enemy.CollidesWith(playerBounds))
-                {
-                    // Reset player position and velocity
-                    _player.Position = _level.PlayerStart;
-                    _player.Velocity = Vector2.Zero;
                     break; // only need to reset once per frame
                 }
+            }
+
+            // Coin collection
+            _player.CollectCoins(_level.Coins);
+
+            // Level completion
+            if (_level.RemainingCoins == 0)
+            {
+                LoadNextLevel();
+                return;
             }
 
             _camera.Follow(_player.Position);
@@ -143,40 +147,48 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // --- BLOCO 1: FUNDO ---
+            // Background (no camera)
             _spriteBatch.Begin();
-            // Em vez de _bgManager, usa o _gameManager que contém o fundo e o input!
             _gameManager?.Draw();
             _spriteBatch.End();
 
-            // --- BLOCO 2: MUNDO (Com Câmera) ---
-            // Aqui calculamos a matriz apenas UMA vez
+            // World with camera
             var cameraMatrix = Matrix.CreateTranslation(-_camera.Position.X, -_camera.Position.Y, 0);
-
-            // Abrimos o Begin com a matriz
             _spriteBatch.Begin(transformMatrix: cameraMatrix);
-
             try
             {
                 _level?.Draw(_spriteBatch);
 
-                if (_level != null && _level.Enemies != null)
+                if (_level?.Enemies != null)
                 {
                     foreach (var enemy in _level.Enemies)
-                    {
                         enemy.Draw(_spriteBatch);
-                    }
+                }
+
+                // ✅ ADD THIS: draw coins
+                if (_level?.Coins != null)
+                {
+                    foreach (var coin in _level.Coins)
+                        coin.Draw(_spriteBatch);
                 }
 
                 _player?.Draw(_spriteBatch);
             }
             finally
             {
-                // Fecha o bloco da câmera
                 _spriteBatch.End();
             }
 
             base.Draw(gameTime);
+        }
+
+        private void LoadNextLevel()
+        {
+            _currentLevelIndex++;
+            if (_currentLevelIndex < _levelFiles.Length)
+                LoadLevel(_currentLevelIndex);
+            else
+                Exit();
         }
     }
 }

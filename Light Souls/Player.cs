@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Light_Souls
 {
@@ -59,6 +60,20 @@ namespace Light_Souls
                 Velocity.Y = _jumpPower;
             }
         }
+
+        public void CollectCoins(List<Coin> coins)
+        {
+            Rectangle playerBounds = GetBounds();
+            foreach (var coin in coins)
+            {
+                if (!coin.IsCollected && coin.GetBounds().Intersects(playerBounds))
+                {
+                    coin.IsCollected = true;
+                    // Optionally play sound, increase score, etc.
+                }
+            }
+        }
+
 
         private bool IsGrounded(Tile?[,] tiles)
         {
