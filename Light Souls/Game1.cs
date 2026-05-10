@@ -180,7 +180,7 @@ namespace Light_Souls
                 {
                     if (!_player.IsInvincible)
                     {
-                        _player.Position = _level.PlayerStart;
+                        
                         _player.Velocity = Vector2.Zero;
                         _player.TakeHit();
                     }
@@ -195,9 +195,7 @@ namespace Light_Souls
                 {
                     if (!_player.IsInvincible)
                     {
-                        _player.Position = _level.PlayerStart;
-                        _player.Velocity = Vector2.Zero;
-                        _player.TakeHit();
+                        _player.Kill();
                     }
                     break;
                 }
@@ -210,9 +208,7 @@ namespace Light_Souls
                 {
                     if (!_player.IsInvincible)
                     {
-                        _player.Position = _level.PlayerStart;
-                        _player.Velocity = Vector2.Zero;
-                        _player.TakeHit();
+                        _player.Kill(); ;
                     }
                     break;
                 }

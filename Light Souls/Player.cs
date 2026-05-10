@@ -20,14 +20,14 @@ namespace Light_Souls
         // Dimensões do sprite (da sprite sheet)
         private const int SPRITE_WIDTH = 40;
         private const int SPRITE_HEIGHT = 50;
-        private const int HITBOX_WIDTH = 40;
-        private const int HITBOX_HEIGHT = 50;
+        private const int HITBOX_WIDTH = 50;
+        private const int HITBOX_HEIGHT = 60;
         private Vector2 _drawOffset;
 
         // Death & respawn
         private bool _isDead = false;
         private float _deathTimer = 0f;
-        private const float DEATH_RESPAWN_TIME = 1.2f;
+        private const float DEATH_RESPAWN_TIME = 3f;
         private Vector2 _startPosition;
 
         // Movement settings
@@ -94,8 +94,11 @@ namespace Light_Souls
 
         private void SetAnimation(Animation animation)
         {
-            if (animation == null) return;  // prevent null reference
+            if (animation == null) return;
+
+            
             if (_currentAnimation == animation) return;
+
             _currentAnimation = animation;
             _currentAnimation.Reset();
         }
@@ -106,6 +109,10 @@ namespace Light_Souls
             _isDead = true;
             _deathTimer = DEATH_RESPAWN_TIME;
             Velocity = Vector2.Zero;
+
+            // OBRIGATÓRIO: Resetar a animação aqui para garantir que 
+            // IsFinished volta a ser false e o timer a zero.
+            _deathAnimation.Reset();
             SetAnimation(_deathAnimation);
         }
 
@@ -116,15 +123,18 @@ namespace Light_Souls
         }
 
         public void Update(GameTime gameTime, List<Platform> platforms,
-            List<Enemy> enemies, List<FlyingEnemy> flyingEnemies, List<ChasingEnemy> chasingEnemies)
+    List<Enemy> enemies, List<FlyingEnemy> flyingEnemies, List<ChasingEnemy> chasingEnemies)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (_invincibleTimer > 0) _invincibleTimer -= deltaTime;
 
+            // 1. LÓGICA DE MORTE
             if (_isDead)
             {
                 _deathTimer -= deltaTime;
+                _currentAnimation = _deathAnimation;
+                _currentAnimation.Update(deltaTime);
                 if (_deathTimer <= 0)
                 {
                     _isDead = false;
@@ -135,38 +145,37 @@ namespace Light_Souls
                 }
                 else
                 {
-                    _deathAnimation.Update(deltaTime);
-                    if (_deathAnimation.IsFinished && _deathTimer > 0)
-                        _deathAnimation.Reset();
+                    // Importante: Usar o SetAnimation aqui também para consistência
+                    SetAnimation(_deathAnimation);
                 }
+
+                // Atualizamos a animação ativa e saímos
+                _currentAnimation?.Update(deltaTime);
                 return;
             }
 
-            // --- Normal living logic ---
+            // 2. LÓGICA DE MOVIMENTO E INPUT
             if (_stompCooldown > 0) _stompCooldown -= deltaTime;
             if (_stompCooldown <= 0) _isStomping = false;
 
             _isOnGround = IsGrounded(platforms);
 
-            // Horizontal input
             var keyboard = Keyboard.GetState();
             float moveX = 0;
             if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left)) moveX = -1;
             if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right)) moveX = 1;
-            Velocity.X = moveX * _moveSpeed;
 
+            Velocity.X = moveX * _moveSpeed;
             if (moveX != 0) _facingRight = moveX > 0;
 
-            // Horizontal movement
             Position.X += Velocity.X * deltaTime;
             HandleHorizontalCollisions(platforms);
 
-            // Gravity & vertical movement
             Velocity.Y += _gravity * deltaTime;
             Position.Y += Velocity.Y * deltaTime;
             HandleVerticalCollisions(platforms, enemies, flyingEnemies, chasingEnemies);
 
-            // Jump input (edge triggered)
+            // Jump logic
             bool jumpPressed = (keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up)) && !_previousJumpState;
             _previousJumpState = keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up);
 
@@ -178,25 +187,22 @@ namespace Light_Souls
                 OnJump?.Invoke();
             }
 
-            // Stomp (Down while in air)
-            bool downPressed = keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down);
-            if (!_isOnGround && downPressed && _stompCooldown <= 0 && !_isStomping)
+            // 3. ESCOLHA DA ANIMAÇÃO (Apenas uma vez por frame)
+            if (!_isOnGround)
             {
-                Velocity.Y = _stompForce;
-                _isStomping = true;
-                _stompCooldown = STOMP_COOLDOWN_TIME;
-                OnStomp?.Invoke();
+                SetAnimation(_jumpAnimation);
+            }
+            else if (Math.Abs(Velocity.X) > 1.0f) // Threshold ligeiramente maior para evitar ruído
+            {
+                SetAnimation(_runAnimation);
+            }
+            else
+            {
+                SetAnimation(_idleAnimation);
             }
 
-            // Choose animation
-            if (!_isOnGround)
-                SetAnimation(_jumpAnimation);
-            else if (System.Math.Abs(Velocity.X) > 0.1f)
-                SetAnimation(_runAnimation);
-            else
-                SetAnimation(_idleAnimation);
-
-            _currentAnimation.Update(deltaTime);
+            // 4. O ÚNICO UPDATE DA ANIMAÇÃO
+            _currentAnimation?.Update(deltaTime);
         }
 
         private bool IsGrounded(List<Platform> platforms)
@@ -317,21 +323,23 @@ namespace Light_Souls
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (_isDead || _currentAnimation == null) return;
+            // Removi o _isDead daqui para que a animação de morte APAREÇA
+            if (_currentAnimation == null) return;
 
-            // Efeito de piscar quando invencível
+            // Efeito de piscar se estiver invencível (opcional)
             if (IsInvincible && (DateTime.Now.Millisecond / 100) % 2 == 0) return;
 
             Texture2D currentTexture = _currentAnimation.GetCurrentFrame();
-
             SpriteEffects effects = _facingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            // Calculamos a origem (centro horizontal, fundo vertical)
-            Vector2 origin = new Vector2(currentTexture.Width / 2f, currentTexture.Height);
+            Rectangle destRect = new Rectangle(
+                (int)Position.X - (HITBOX_WIDTH / 2),
+                (int)Position.Y - (HITBOX_HEIGHT / 2),
+                HITBOX_WIDTH,
+                HITBOX_HEIGHT
+            );
 
-            // Desenhamos na posição exata do pé do personagem
-            // Nota: Ajusta o Position.Y se a tua colisão usar o centro da hitbox
-            spriteBatch.Draw(currentTexture, Position, null, Color.White, 0f, origin, 1f, effects, 0f);
+            spriteBatch.Draw(currentTexture, destRect, null, Color.White, 0f, Vector2.Zero, effects, 0f);
         }
     }
 }

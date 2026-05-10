@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Light Souls")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a114568713aeb945f0a37bb45fd893152a25ef38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05aaba7d598d327abed558e8a5e4ce353f23f0ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("Light Souls")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Light Souls")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
