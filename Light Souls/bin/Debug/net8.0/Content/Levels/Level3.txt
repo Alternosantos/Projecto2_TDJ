@@ -3,5 +3,5 @@ PLATFORM 0 400 1200 32
 PLATFORM 400 300 200 32
 ENEMY 500 280          # inimigo normal (anda)
 FLYING 700 200 600 900 # voa entre x=600 e x=900
-CHASING 300 280        # perseguidor
+CHASING 300 368        # perseguidor
 COIN 450 350

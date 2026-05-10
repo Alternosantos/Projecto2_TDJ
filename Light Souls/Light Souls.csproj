@@ -11,8 +11,133 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\Platforms\grey_dirt1.png" />
+    <None Remove="Content\Platforms\grey_dirt2.png" />
+    <None Remove="Content\Platforms\grey_dirt3.png" />
+    <None Remove="Content\Platforms\grey_dirt4.png" />
+    <None Remove="Content\Platforms\grey_dirt5.png" />
+    <None Remove="Content\Platforms\grey_dirt6.png" />
+    <None Remove="Content\Platforms\grey_dirt7.png" />
+    <None Remove="Content\Player\Dead.png" />
+    <None Remove="Content\Player\Dead\0.png" />
+    <None Remove="Content\Player\Dead\1.png" />
+    <None Remove="Content\Player\Dead\3.png" />
+    <None Remove="Content\Player\Dead\4.png" />
+    <None Remove="Content\Player\Dead\5.png" />
+    <None Remove="Content\Player\Dead\6.png" />
+    <None Remove="Content\Player\Idle.png" />
+    <None Remove="Content\Player\Idle\0.png" />
+    <None Remove="Content\Player\Idle\1.png" />
+    <None Remove="Content\Player\Idle\2.png" />
+    <None Remove="Content\Player\Idle\3.png" />
+    <None Remove="Content\Player\Jump.png" />
+    <None Remove="Content\Player\Jump\0.png" />
+    <None Remove="Content\Player\Jump\1.png" />
+    <None Remove="Content\Player\Jump\2.png" />
+    <None Remove="Content\Player\Jump\3.png" />
+    <None Remove="Content\Player\Jump\4.png" />
+    <None Remove="Content\Player\Jump\5.png" />
+    <None Remove="Content\Player\Run.png" />
+    <None Remove="Content\Player\Run\0.png" />
+    <None Remove="Content\Player\Run\1.png" />
+    <None Remove="Content\Player\Run\2.png" />
+    <None Remove="Content\Player\Run\3.png" />
+    <None Remove="Content\Player\Run\4.png" />
+    <None Remove="Content\Player\Run\5.png" />
+    <None Remove="Content\Player\Run\6.png" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Player\Dead\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Dead\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Dead\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Dead\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Dead\5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Idle\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Idle\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Idle\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Idle\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Jump\5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Platforms\grey_dirt1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Platforms\grey_dirt7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Run\6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico">
@@ -27,9 +152,6 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Content\Background\Layer0.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Background\Layer1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

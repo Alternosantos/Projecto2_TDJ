@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Light_Souls
 {
@@ -16,7 +17,7 @@ namespace Light_Souls
         private Camera _camera;
 
         // Textures
-        private Texture2D _platformTexture;
+        private Texture2D[] _platformTextures;
         private Texture2D _playerTex;
         private Texture2D _enemyTex;
         private Texture2D _coinTex;
@@ -48,8 +49,10 @@ namespace Light_Souls
 
         private void LoadLevel(int index)
         {
-            _level = new Level(_platformTexture, _enemyTex, _coinTex, _levelFiles[index]);
+            _level = new Level(_platformTextures, _enemyTex, _coinTex, _levelFiles[index]);
+            if (_level == null) throw new Exception("Level failed to load");
             _player = new Player(_playerTex, _level.PlayerStart);
+            if (_player == null) throw new Exception("Player failed to create");
             _camera = new Camera(
                 _graphics.PreferredBackBufferWidth,
                 _graphics.PreferredBackBufferHeight,
@@ -70,16 +73,75 @@ namespace Light_Souls
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            // Create textures
-            _platformTexture = CreateSolidTexture(1, 1, Color.Gray);
-            _playerTex = CreateSolidTexture(32, 32, Color.Green);
+            // Texturas sólidas (dummy)
+            _playerTex = CreateSolidTexture(32, 32, Color.White);
             _enemyTex = CreateSolidTexture(32, 32, Color.Red);
             _coinTex = CreateSolidTexture(24, 24, Color.Yellow);
 
+            
+            _platformTextures = new Texture2D[7];
+            for (int i = 0; i < 7; i++)
+                _platformTextures[i] = Content.Load<Texture2D>($"Platforms/grey_dirt{i + 1}");
+
+            
             _backgroundTexture = Content.Load<Texture2D>("Background/Layer1");
 
+            
             LoadLevel(0);
+
+            var idleFrames = LoadFrameList("Player/Idle");
+            var runFrames = LoadFrameList("Player/Run");
+            var jumpFrames = LoadFrameList("Player/Jump");
+            var deadFrames = LoadFrameList("Player/Dead");
+
+            // Verificar se carregou alguma coisa
+            if (idleFrames.Count == 0) throw new Exception("Idle frames not found");
+            if (runFrames.Count == 0) throw new Exception("Run frames not found");
+            if (jumpFrames.Count == 0) throw new Exception("Jump frames not found");
+            if (deadFrames.Count == 0) throw new Exception("Dead frames not found");
+
+            // Criar animações com os frames reais
+            var idleAnim = new Animation(idleFrames, 1f / 7f, true);
+            var runAnim = new Animation(runFrames, 1f / 11f, true);
+            var jumpAnim = new Animation(jumpFrames, 1f / 10f, false);
+            var deadAnim = new Animation(deadFrames, 1f / 10f, false);
+
+            _player.LoadAnimations(idleAnim, runAnim, jumpAnim, deadAnim);
+            System.Diagnostics.Debug.WriteLine($"Idle frames: {idleFrames.Count}");
+            System.Diagnostics.Debug.WriteLine($"Run frames: {runFrames.Count}");
+            System.Diagnostics.Debug.WriteLine($"Jump frames: {jumpFrames.Count}");
+            System.Diagnostics.Debug.WriteLine($"Dead frames: {deadFrames.Count}");
+
+            try
+            {
+                _player.LoadAnimations(idleAnim, runAnim, jumpAnim, deadAnim);
+            }
+            catch (Exception ex)
+            {
+                
+                System.Diagnostics.Debug.WriteLine($"Erro ao carregar animações: {ex.Message}");
+            }
+        }
+
+        private List<Texture2D> LoadFrameList(string folderPath)
+        {
+            var list = new List<Texture2D>();
+            int i = 0;
+            while (true)
+            {
+                try
+                {
+                    list.Add(Content.Load<Texture2D>($"{folderPath}/{i}"));
+                    i++;
+                }
+                catch
+                {
+                    break; // sair quando faltar o ficheiro
+                }
+            }
+            return list;
         }
 
         private Texture2D CreateSolidTexture(int width, int height, Color color)
@@ -174,24 +236,31 @@ namespace Light_Souls
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // 1. Draw background with parallax
+            
             float parallaxFactor = 0.5f;
-            float bgWidth = _backgroundTexture.Width;
-            float bgHeight = _backgroundTexture.Height;
             float screenWidth = GraphicsDevice.Viewport.Width;
             float screenHeight = GraphicsDevice.Viewport.Height;
+            float texWidth = _backgroundTexture.Width;
+            float texHeight = _backgroundTexture.Height;
 
-            float scale = screenWidth / bgWidth;
-            float scaledHeight = bgHeight * scale;
-            float startX = -_camera.Position.X * parallaxFactor;
+            
+            float scale = screenWidth / texWidth;
+            float scaledWidth = texWidth * scale;
+            float scaledHeight = texHeight * scale;
             float yOffset = (screenHeight - scaledHeight) / 2;
 
+            
+            float camOffset = _camera.Position.X * parallaxFactor;
+
+            
+            int startTile = (int)Math.Floor(camOffset / scaledWidth);
+            float startX = startTile * scaledWidth - camOffset;
+
             _spriteBatch.Begin();
-            int tilesNeeded = (int)Math.Ceiling(screenWidth / (bgWidth * scale)) + 2;
-            for (int i = 0; i < tilesNeeded; i++)
+            
+            for (float x = startX; x < startX + screenWidth + scaledWidth; x += scaledWidth)
             {
-                Vector2 pos = new Vector2(startX + i * bgWidth * scale, yOffset);
-                Rectangle destRect = new Rectangle((int)pos.X, (int)pos.Y, (int)(bgWidth * scale), (int)scaledHeight);
+                Rectangle destRect = new Rectangle((int)x, (int)yOffset, (int)scaledWidth, (int)scaledHeight);
                 _spriteBatch.Draw(_backgroundTexture, destRect, Color.White);
             }
             _spriteBatch.End();

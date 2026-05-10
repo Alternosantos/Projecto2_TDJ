@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -31,9 +32,8 @@ namespace Light_Souls
         private Texture2D _platformTexture;
 
         // Construtor recebe texturas e o caminho do ficheiro de nível
-        public Level(Texture2D platformTexture, Texture2D enemyTex, Texture2D coinTex, string levelPath)
+        public Level(Texture2D[] platformTextures, Texture2D enemyTex, Texture2D coinTex, string levelPath)
         {
-            _platformTexture = platformTexture;
             Platforms = new List<Platform>();
             Enemies = new List<Enemy>();
             FlyingEnemies = new List<FlyingEnemy>();
@@ -41,6 +41,7 @@ namespace Light_Souls
             Coins = new List<Coin>();
 
             string[] lines = File.ReadAllLines(levelPath);
+            Random rand = new Random();
 
             foreach (string line in lines)
             {
@@ -61,7 +62,8 @@ namespace Light_Souls
                         int y = int.Parse(parts[2]);
                         int w = int.Parse(parts[3]);
                         int h = int.Parse(parts[4]);
-                        Platforms.Add(new Platform(new Rectangle(x, y, w, h)));
+                        Texture2D chosenTex = platformTextures[rand.Next(platformTextures.Length)];
+                        Platforms.Add(new Platform(new Rectangle(x, y, w, h), chosenTex));
                         break;
 
                     case "ENEMY":
@@ -111,7 +113,7 @@ namespace Light_Souls
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (var platform in Platforms)
-                platform.Draw(spriteBatch, _platformTexture);
+                platform.Draw(spriteBatch);
         }
     }
 }

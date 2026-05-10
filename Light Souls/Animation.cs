@@ -1,42 +1,62 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Light_Souls
 {
     public class Animation
     {
-        public Texture2D SpriteSheet;
-        public int FrameWidth, FrameHeight;
-        public int FramesPerRow;
-        public float FrameTime;
-        private float _timer;
-        private int _currentFrame;
+        public List<Texture2D> Frames { get; }
+        public float FrameTime { get; set; }
+        public bool IsLooping { get; set; }
+        public bool IsFinished { get; private set; }
 
-        public Animation(Texture2D spriteSheet, int frameWidth, int frameHeight, float frameTime)
+        private int _currentFrame;
+        private float _timer;
+
+        public Animation(List<Texture2D> frames, float frameTime = 0.1f, bool looping = true)
         {
-            SpriteSheet = spriteSheet;
-            FrameWidth = frameWidth;
-            FrameHeight = frameHeight;
+            Frames = frames;
             FrameTime = frameTime;
-            FramesPerRow = spriteSheet.Width / frameWidth;
+            IsLooping = looping;
+            _currentFrame = 0;
+            _timer = 0f;
+            IsFinished = false;
         }
 
         public void Update(float deltaTime)
         {
+            if (IsFinished) return;
+
             _timer += deltaTime;
             if (_timer >= FrameTime)
             {
                 _timer -= FrameTime;
-                _currentFrame = (_currentFrame + 1) % (FramesPerRow * (SpriteSheet.Height / FrameHeight));
+                _currentFrame++;
+
+                if (_currentFrame >= Frames.Count)
+                {
+                    if (IsLooping)
+                        _currentFrame = 0;
+                    else
+                    {
+                        _currentFrame = Frames.Count - 1;
+                        IsFinished = true;
+                    }
+                }
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        public Texture2D GetCurrentFrame()
         {
-            int row = _currentFrame / FramesPerRow;
-            int col = _currentFrame % FramesPerRow;
-            Rectangle source = new Rectangle(col * FrameWidth, row * FrameHeight, FrameWidth, FrameHeight);
-            spriteBatch.Draw(SpriteSheet, position, source, Color.White);
+            return Frames[_currentFrame];
+        }
+
+        public void Reset()
+        {
+            _currentFrame = 0;
+            _timer = 0f;
+            IsFinished = false;
         }
     }
 }
