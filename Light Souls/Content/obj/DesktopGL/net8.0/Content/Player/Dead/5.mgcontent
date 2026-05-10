@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/5.png</SourceFile>
-  <SourceTime>2026-05-10T18:14:08.2014516+01:00</SourceTime>
-  <DestFile>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Player/Dead/5.xnb</DestFile>
-  <DestTime>2026-05-10T18:41:49.5228181+01:00</DestTime>
+  <SourceFile>C:/Users/paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/5.png</SourceFile>
+  <SourceTime>2026-05-10T21:52:19.6330611+01:00</SourceTime>
+  <DestFile>C:/Users/paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Player/Dead/5.xnb</DestFile>
+  <DestTime>2026-05-10T22:26:51.3331702+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2025-06-02T11:31:02+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
