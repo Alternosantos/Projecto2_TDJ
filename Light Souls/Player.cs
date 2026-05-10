@@ -13,10 +13,7 @@ namespace Light_Souls
         public Vector2 Velocity;
 
         // Animation
-        private Animation _idleAnimation;
-        private Animation _runAnimation;
-        private Animation _jumpAnimation;
-        private Animation _deathAnimation;
+
         private Animation _currentAnimation;
         private bool _facingRight = true;
 
@@ -69,18 +66,18 @@ namespace Light_Souls
         }
 
         // Load animations
-        private Animation _idleAnim, _runAnim, _jumpAnim, _deathAnim;
+        private Animation _idleAnimation, _runAnimation, _jumpAnimation, _deathAnimation;
 
         public void LoadAnimations(Animation idle, Animation run, Animation jump, Animation dead)
         {
-            _idleAnim = idle;
-            _runAnim = run;
-            _jumpAnim = jump;
-            _deathAnim = dead;
-            _currentAnimation = _idleAnim;
+            _idleAnimation = idle;
+            _runAnimation = run;
+            _jumpAnimation = jump;
+            _deathAnimation = dead;
+            _currentAnimation = _idleAnimation;
 
             // Verificação simples
-            if (_idleAnim == null || _runAnim == null || _jumpAnim == null || _deathAnim == null)
+            if (_idleAnimation == null || _runAnimation == null || _jumpAnimation == null || _deathAnimation == null)
                 throw new Exception("Uma das animações é nula.");
         }
 
@@ -312,7 +309,7 @@ namespace Light_Souls
             {
                 if (!coin.IsCollected && coin.GetBounds().Intersects(playerBounds))
                 {
-                    coin.IsCollected = true;
+                    coin.IsCollected = true;    
                     OnCoinPickup?.Invoke();
                 }
             }
@@ -321,14 +318,20 @@ namespace Light_Souls
         public void Draw(SpriteBatch spriteBatch)
         {
             if (_isDead || _currentAnimation == null) return;
-            if (IsInvincible && (int)(_invincibleTimer * 30) % 2 == 0) return;
+
+            // Efeito de piscar quando invencível
+            if (IsInvincible && (DateTime.Now.Millisecond / 100) % 2 == 0) return;
 
             Texture2D currentTexture = _currentAnimation.GetCurrentFrame();
-            if (currentTexture == null) return; // segurança
 
             SpriteEffects effects = _facingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Vector2 drawPos = Position + _drawOffset;
-            spriteBatch.Draw(currentTexture, drawPos, null, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
+
+            // Calculamos a origem (centro horizontal, fundo vertical)
+            Vector2 origin = new Vector2(currentTexture.Width / 2f, currentTexture.Height);
+
+            // Desenhamos na posição exata do pé do personagem
+            // Nota: Ajusta o Position.Y se a tua colisão usar o centro da hitbox
+            spriteBatch.Draw(currentTexture, Position, null, Color.White, 0f, origin, 1f, effects, 0f);
         }
     }
 }
