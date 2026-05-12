@@ -1,7 +1,22 @@
-START 100 300
-PLATFORM 0 400 1200 32
+// Level 3 — Mistura de todos os tipos de inimigos
+
+START 100 340
+
+// Plataforma base
+PLATFORM 0 400 1600 32
+
+// Plataforma elevada — Y=300, logo inimigos nela devem estar em Y=268
 PLATFORM 400 300 200 32
-ENEMY 500 280          # inimigo normal (anda)
-FLYING 700 200 600 900 # voa entre x=600 e x=900
-CHASING 300 368        # perseguidor
-COIN 450 350
+
+// Inimigo normal em cima da plataforma elevada (300 - 32 = 268)
+ENEMY 450 268
+
+// Inimigo voador patrulha entre x=600 e x=900 a Y=200
+FLYING 700 200 600 900
+
+// Perseguidor no chão (400 - 32 = 368)
+CHASING 800 368
+
+// Moeda na plataforma elevada e outra mais à frente
+COIN 470 260
+COIN 1000 360

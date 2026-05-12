@@ -1,62 +1,88 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Light_Souls
 {
-    public class Animation
+    /// <summary>
+    /// Frame-based sprite animation. Supports looping and one-shot playback.
+    /// </summary>
+    public sealed class Animation
     {
-        public List<Texture2D> Frames { get; }
+        // ── Properties ───────────────────────────────────────────────────────────
+
+        /// <summary>All frames in the animation sequence.</summary>
+        public IReadOnlyList<Texture2D> Frames { get; }
+
+        /// <summary>Time in seconds each frame is displayed.</summary>
         public float FrameTime { get; set; }
+
+        /// <summary>Whether the animation loops when it reaches the last frame.</summary>
         public bool IsLooping { get; set; }
+
+        /// <summary>True once a non-looping animation has played through completely.</summary>
         public bool IsFinished { get; private set; }
 
-        private int _currentFrame;
-        private float _timer;
+        // ── Private state ────────────────────────────────────────────────────────
 
+        private readonly List<Texture2D> _frames;
+        private int   _currentFrameIndex;
+        private float _elapsed;
+
+        // ── Constructor ──────────────────────────────────────────────────────────
+
+        /// <param name="frames">Ordered list of textures that make up this animation.</param>
+        /// <param name="frameTime">Seconds per frame.</param>
+        /// <param name="looping">If true the animation repeats; otherwise it stops at the last frame.</param>
         public Animation(List<Texture2D> frames, float frameTime = 0.1f, bool looping = true)
         {
-            Frames = frames;
-            FrameTime = frameTime;
-            IsLooping = looping;
-            _currentFrame = 0;
-            _timer = 0f;
-            IsFinished = false;
+            _frames            = frames;
+            Frames             = frames.AsReadOnly();
+            FrameTime          = frameTime;
+            IsLooping          = looping;
+            _currentFrameIndex = 0;
+            _elapsed           = 0f;
+            IsFinished         = false;
         }
 
+        // ── Public methods ───────────────────────────────────────────────────────
+
+        /// <summary>Advances the animation by <paramref name="deltaTime"/> seconds.</summary>
         public void Update(float deltaTime)
         {
             if (IsFinished) return;
 
-            _timer += deltaTime;
-            if (_timer >= FrameTime)
+            _elapsed += deltaTime;
+            while (_elapsed >= FrameTime)
             {
-                _timer -= FrameTime;
-                _currentFrame++;
+                _elapsed -= FrameTime;
+                _currentFrameIndex++;
 
-                if (_currentFrame >= Frames.Count)
+                if (_currentFrameIndex >= _frames.Count)
                 {
                     if (IsLooping)
-                        _currentFrame = 0;
+                    {
+                        _currentFrameIndex = 0;
+                    }
                     else
                     {
-                        _currentFrame = Frames.Count - 1;
+                        _currentFrameIndex = _frames.Count - 1;
                         IsFinished = true;
+                        return;
                     }
                 }
             }
         }
 
-        public Texture2D GetCurrentFrame()
-        {
-            return Frames[_currentFrame];
-        }
+        /// <summary>Returns the texture for the current frame.</summary>
+        public Texture2D GetCurrentFrame() => _frames[_currentFrameIndex];
 
+        /// <summary>Resets the animation to its first frame.</summary>
         public void Reset()
         {
-            _currentFrame = 0;
-            _timer = 0f;
-            IsFinished = false;
+            _currentFrameIndex = 0;
+            _elapsed           = 0f;
+            IsFinished         = false;
         }
     }
 }
