@@ -1,5 +1,28 @@
-START 100 300
-PLATFORM 0 400 1200 32
-PLATFORM 600 250 200 32
-COIN 700 200
-ENEMY 650 230
+// Level 2 — Plataformas em degraus acessíveis com double-jump
+// JumpPower=-500, Gravity=1600 → altura máxima ~78px por salto
+// Usar degraus de ~70px de diferença entre plataformas
+
+START 100 340
+
+// Plataforma base (chão)
+PLATFORM 0 400 1600 32
+
+// Degrau intermédio esquerdo (70px acima do chão)
+PLATFORM 300 330 200 32
+
+// Plataforma superior (outro degrau de ~70px)
+PLATFORM 550 260 250 32
+
+// Plataforma topo (mais à direita, acessível com double-jump da plataforma acima)
+PLATFORM 900 190 250 32
+
+// Inimigo no chão — Y deve ser (400 - 32) = 368 para ficar mesmo em cima
+ENEMY 400 368
+
+// Inimigo no degrau intermédio — Y = (330 - 32) = 298
+ENEMY 310 298
+
+// Moedas — uma acessível no chão, outra nas plataformas
+COIN 200 360
+COIN 620 220
+COIN 950 150

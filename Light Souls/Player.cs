@@ -1,223 +1,343 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Light_Souls
 {
-    public class Player
+    /// <summary>
+    /// The player character. Handles input, physics, animation selection,
+    /// collision resolution, coin collection, and death/respawn logic.
+    /// </summary>
+    public sealed class Player
     {
-        // Position and hitbox (gameplay collider)
-        public Vector2 Position;      // position of the hitbox center-bottom?
+        // ── Physics constants ────────────────────────────────────────────────────
+
+        private const float MoveSpeed         = 300f;
+        private const float JumpPower         = -500f;
+        private const float Gravity           = 1600f;
+        private const float StompBounceSpeed  = -300f;
+        private const float StompCooldown     = 0.5f;
+        private const float RespawnDelay      = 3f;
+        private const float PostRespawnIFrames = 0.5f;
+        private const float HitIFrameDuration = 0.5f;
+        private const int   MaxJumps          = 2;
+
+        // ── Sprite / hitbox dimensions ───────────────────────────────────────────
+
+        private const int HitboxWidth  = 50;
+        private const int HitboxHeight = 60;
+
+        // ── Public state ─────────────────────────────────────────────────────────
+
+        /// <summary>World-space centre of the player's hitbox.</summary>
+        public Vector2 Position;
+
+        /// <summary>Current frame velocity in pixels per second.</summary>
         public Vector2 Velocity;
 
-        // Animation
+        /// <summary>True while the player's death animation is playing.</summary>
+        public bool IsDead => _isDead;
 
-        private Animation _currentAnimation;
-        private bool _facingRight = true;
-
-        // Dimensões do sprite (da sprite sheet)
-        private const int SPRITE_WIDTH = 40;
-        private const int SPRITE_HEIGHT = 50;
-        private const int HITBOX_WIDTH = 50;
-        private const int HITBOX_HEIGHT = 60;
-        private Vector2 _drawOffset;
-
-        // Death & respawn
-        private bool _isDead = false;
-        private float _deathTimer = 0f;
-        private const float DEATH_RESPAWN_TIME = 3f;
-        private Vector2 _startPosition;
-
-        // Movement settings
-        private float _moveSpeed = 300f;
-        private float _jumpPower = -500f;
-        private float _gravity = 1600f;
-        private int _jumpCount = 0;
-        private int _maxJumps = 2;
-        private bool _isOnGround;
-
-        // Stomp
-        private float _stompForce = 800f;
-        private bool _isStomping = false;
-        private float _stompCooldown = 0f;
-        private const float STOMP_COOLDOWN_TIME = 0.5f;
-
-        // Invincibility
-        private float _invincibleTimer = 0f;
+        /// <summary>True while the player cannot take damage.</summary>
         public bool IsInvincible => _invincibleTimer > 0f && !_isDead;
 
-        private bool _previousJumpState = false;
+        // ── Events ───────────────────────────────────────────────────────────────
 
-        // Sound events
-        public System.Action OnJump;
-        public System.Action OnCoinPickup;
-        public System.Action OnStomp;
+        /// <summary>Fired once when the player leaves the ground via a jump.</summary>
+        public Action OnJump;
 
-        // Constructor
-        public Player(Texture2D dummyTexture, Vector2 startPosition)
+        /// <summary>Fired once each time a coin is collected.</summary>
+        public Action OnCoinPickup;
+
+        // ── Animation ────────────────────────────────────────────────────────────
+
+        private Animation _currentAnimation;
+        private Animation _idleAnimation;
+        private Animation _runAnimation;
+        private Animation _jumpAnimation;
+        private Animation _deathAnimation;
+        private bool _facingRight = true;
+
+        // ── Physics state ────────────────────────────────────────────────────────
+
+        private bool  _isOnGround;
+        private int   _jumpCount;
+        private bool  _jumpWasPressed;   // edge-detection for jump input
+        private float _invincibleTimer;
+
+        // ── Stomp state ──────────────────────────────────────────────────────────
+
+        private bool  _isStomping;
+        private float _stompCooldownTimer;
+
+        // ── Death / respawn ───────────────────────────────────────────────────────
+
+        private bool    _isDead;
+        private float   _deathTimer;
+        private Vector2 _spawnPosition;
+
+        // ── World bounds ─────────────────────────────────────────────────────────
+
+        private int _worldWidth  = int.MaxValue;
+        private int _worldHeight = int.MaxValue;
+
+        // ── Constructor ──────────────────────────────────────────────────────────
+
+        public Player(Texture2D texture, Vector2 spawnPosition)
         {
-            _startPosition = startPosition;
-            Position = startPosition;
-            Velocity = Vector2.Zero;
-            // Hitbox centrada: o sprite deve ser desenhado com o fundo centralizado na hitbox
-            _drawOffset = new Vector2(-SPRITE_WIDTH / 2, -SPRITE_HEIGHT + HITBOX_HEIGHT / 2);
+            _spawnPosition = spawnPosition;
+            Position       = spawnPosition;
+            Velocity       = Vector2.Zero;
         }
 
-        // Load animations
-        private Animation _idleAnimation, _runAnimation, _jumpAnimation, _deathAnimation;
+        // ── Public setup ─────────────────────────────────────────────────────────
 
-        public void LoadAnimations(Animation idle, Animation run, Animation jump, Animation dead)
+        /// <summary>
+        /// Attaches the four animations that drive the player's visual state.
+        /// Must be called before the first <see cref="Update"/> call.
+        /// </summary>
+        public void LoadAnimations(Animation idle, Animation run,
+                                   Animation jump, Animation dead)
         {
-            _idleAnimation = idle;
-            _runAnimation = run;
-            _jumpAnimation = jump;
-            _deathAnimation = dead;
+            _idleAnimation  = idle  ?? throw new ArgumentNullException(nameof(idle));
+            _runAnimation   = run   ?? throw new ArgumentNullException(nameof(run));
+            _jumpAnimation  = jump  ?? throw new ArgumentNullException(nameof(jump));
+            _deathAnimation = dead  ?? throw new ArgumentNullException(nameof(dead));
             _currentAnimation = _idleAnimation;
-
-            // Verificação simples
-            if (_idleAnimation == null || _runAnimation == null || _jumpAnimation == null || _deathAnimation == null)
-                throw new Exception("Uma das animações é nula.");
         }
 
-        // Hitbox rectangle (used for collision)
-        public Rectangle GetBounds()
+        /// <summary>
+        /// Informs the player of the level boundaries so it can clamp its
+        /// position and detect falls.
+        /// </summary>
+        public void SetWorldBounds(int width, int height)
         {
-            return new Rectangle(
-                (int)(Position.X - HITBOX_WIDTH / 2),
-                (int)(Position.Y - HITBOX_HEIGHT / 2),
-                HITBOX_WIDTH,
-                HITBOX_HEIGHT
-            );
+            _worldWidth  = width;
+            _worldHeight = height;
         }
 
-        private void SetAnimation(Animation animation)
+        // ── Core game loop ────────────────────────────────────────────────────────
+
+        /// <summary>Updates physics, input, collision, and animation each frame.</summary>
+        public void Update(GameTime gameTime,
+                           IReadOnlyList<Platform>     platforms,
+                           IReadOnlyList<Enemy>        enemies,
+                           IReadOnlyList<FlyingEnemy>  flyingEnemies,
+                           IReadOnlyList<ChasingEnemy> chasingEnemies)
         {
-            if (animation == null) return;
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            
-            if (_currentAnimation == animation) return;
+            if (_invincibleTimer > 0f) _invincibleTimer -= dt;
 
-            _currentAnimation = animation;
-            _currentAnimation.Reset();
-        }
-
-        public void Kill()
-        {
-            if (_isDead) return;
-            _isDead = true;
-            _deathTimer = DEATH_RESPAWN_TIME;
-            Velocity = Vector2.Zero;
-
-            // OBRIGATÓRIO: Resetar a animação aqui para garantir que 
-            // IsFinished volta a ser false e o timer a zero.
-            _deathAnimation.Reset();
-            SetAnimation(_deathAnimation);
-        }
-
-        public void TakeHit()
-        {
-            if (IsInvincible || _isDead) return;
-            _invincibleTimer = 0.5f;
-        }
-
-        public void Update(GameTime gameTime, List<Platform> platforms,
-    List<Enemy> enemies, List<FlyingEnemy> flyingEnemies, List<ChasingEnemy> chasingEnemies)
-        {
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (_invincibleTimer > 0) _invincibleTimer -= deltaTime;
-
-            // 1. LÓGICA DE MORTE
             if (_isDead)
             {
-                _deathTimer -= deltaTime;
-                _currentAnimation = _deathAnimation;
-                _currentAnimation.Update(deltaTime);
-                if (_deathTimer <= 0)
-                {
-                    _isDead = false;
-                    Position = _startPosition;
-                    Velocity = Vector2.Zero;
-                    _invincibleTimer = 0.5f;
-                    SetAnimation(_idleAnimation);
-                }
-                else
-                {
-                    // Importante: Usar o SetAnimation aqui também para consistência
-                    SetAnimation(_deathAnimation);
-                }
-
-                // Atualizamos a animação ativa e saímos
-                _currentAnimation?.Update(deltaTime);
+                UpdateDead(dt);
                 return;
             }
 
-            // 2. LÓGICA DE MOVIMENTO E INPUT
-            if (_stompCooldown > 0) _stompCooldown -= deltaTime;
-            if (_stompCooldown <= 0) _isStomping = false;
+            UpdateStompCooldown(dt);
+            ReadInput(dt, platforms);
+            ApplyGravityAndMove(dt, platforms, enemies, flyingEnemies, chasingEnemies);
+            SelectAnimation();
+            _currentAnimation?.Update(dt);
+            EnforceWorldBounds();
+        }
 
+        /// <summary>Instantly kills the player and starts the death sequence.</summary>
+        public void Kill()
+        {
+            if (_isDead) return;
+
+            _isDead     = true;
+            _deathTimer = RespawnDelay;
+            Velocity    = Vector2.Zero;
+
+            _deathAnimation.Reset();
+            ChangeAnimation(_deathAnimation);
+        }
+
+        /// <summary>
+        /// Grants a brief invincibility window (used by normal-enemy hits).
+        /// Has no effect if the player is already invincible or dead.
+        /// </summary>
+        public void TakeHit()
+        {
+            if (IsInvincible || _isDead) return;
+            _invincibleTimer = HitIFrameDuration;
+        }
+
+        /// <summary>
+        /// Checks each coin in <paramref name="coins"/> and marks any that
+        /// overlap the player's hitbox as collected.
+        /// </summary>
+        public void CollectCoins(IReadOnlyList<Coin> coins)
+        {
+            Rectangle bounds = GetBounds();
+            foreach (var coin in coins)
+            {
+                if (!coin.IsCollected && coin.GetBounds().Intersects(bounds))
+                {
+                    coin.IsCollected = true;
+                    OnCoinPickup?.Invoke();
+                }
+            }
+        }
+
+        /// <returns>The world-space AABB used for all collision tests.</returns>
+        public Rectangle GetBounds()
+            => new Rectangle(
+                (int)(Position.X - HitboxWidth  / 2),
+                (int)(Position.Y - HitboxHeight / 2),
+                HitboxWidth, HitboxHeight);
+
+        /// <summary>Draws the player, applying a flicker effect while invincible.</summary>
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (_currentAnimation == null) return;
+
+            // Flicker effect: skip every other 100ms slice while invincible
+            if (IsInvincible && (DateTime.Now.Millisecond / 100) % 2 == 0) return;
+
+            var effects  = _facingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            var destRect = new Rectangle(
+                (int)Position.X - HitboxWidth  / 2,
+                (int)Position.Y - HitboxHeight / 2,
+                HitboxWidth, HitboxHeight);
+
+            spriteBatch.Draw(_currentAnimation.GetCurrentFrame(),
+                             destRect, null, Color.White, 0f, Vector2.Zero, effects, 0f);
+        }
+
+        // ── Private update helpers ───────────────────────────────────────────────
+
+        private void UpdateDead(float dt)
+        {
+            _deathTimer -= dt;
+            _deathAnimation?.Update(dt);
+
+            if (_deathTimer <= 0f)
+                Respawn();
+        }
+
+        private void Respawn()
+        {
+            _isDead          = false;
+            Position         = _spawnPosition;
+            Velocity         = Vector2.Zero;
+            _invincibleTimer = PostRespawnIFrames;
+            _jumpCount       = 0;
+            ChangeAnimation(_idleAnimation);
+        }
+
+        private void UpdateStompCooldown(float dt)
+        {
+            if (_stompCooldownTimer > 0f)
+            {
+                _stompCooldownTimer -= dt;
+                if (_stompCooldownTimer <= 0f)
+                    _isStomping = false;
+            }
+        }
+
+        private void ReadInput(float dt, IReadOnlyList<Platform> platforms)
+        {
             _isOnGround = IsGrounded(platforms);
 
-            var keyboard = Keyboard.GetState();
-            float moveX = 0;
-            if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left)) moveX = -1;
-            if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right)) moveX = 1;
+            var kb    = Keyboard.GetState();
+            bool left  = kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left);
+            bool right = kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right);
+            bool jumpHeld = kb.IsKeyDown(Keys.Space) || kb.IsKeyDown(Keys.Up);
 
-            Velocity.X = moveX * _moveSpeed;
-            if (moveX != 0) _facingRight = moveX > 0;
+            // Horizontal movement
+            float moveX = 0f;
+            if (left)  moveX = -1f;
+            if (right) moveX =  1f;
 
-            Position.X += Velocity.X * deltaTime;
-            HandleHorizontalCollisions(platforms);
+            Velocity.X = moveX * MoveSpeed;
+            if (moveX != 0f) _facingRight = moveX > 0f;
 
-            Velocity.Y += _gravity * deltaTime;
-            Position.Y += Velocity.Y * deltaTime;
-            HandleVerticalCollisions(platforms, enemies, flyingEnemies, chasingEnemies);
+            // Jump (detect press edge)
+            bool jumpPressed = jumpHeld && !_jumpWasPressed;
+            _jumpWasPressed  = jumpHeld;
 
-            // Jump logic
-            bool jumpPressed = (keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up)) && !_previousJumpState;
-            _previousJumpState = keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Up);
-
-            if (jumpPressed && !_isStomping && (_isOnGround || _jumpCount < _maxJumps))
+            if (jumpPressed && !_isStomping && (_isOnGround || _jumpCount < MaxJumps))
             {
-                Velocity.Y = _jumpPower;
+                Velocity.Y = JumpPower;
                 _jumpCount++;
                 _isOnGround = false;
                 OnJump?.Invoke();
             }
-
-            // 3. ESCOLHA DA ANIMAÇÃO (Apenas uma vez por frame)
-            if (!_isOnGround)
-            {
-                SetAnimation(_jumpAnimation);
-            }
-            else if (Math.Abs(Velocity.X) > 1.0f) // Threshold ligeiramente maior para evitar ruído
-            {
-                SetAnimation(_runAnimation);
-            }
-            else
-            {
-                SetAnimation(_idleAnimation);
-            }
-
-            // 4. O ÚNICO UPDATE DA ANIMAÇÃO
-            _currentAnimation?.Update(deltaTime);
         }
 
-        private bool IsGrounded(List<Platform> platforms)
+        private void ApplyGravityAndMove(float dt,
+                                          IReadOnlyList<Platform>     platforms,
+                                          IReadOnlyList<Enemy>        enemies,
+                                          IReadOnlyList<FlyingEnemy>  flyingEnemies,
+                                          IReadOnlyList<ChasingEnemy> chasingEnemies)
         {
-            // Cria um rectângulo ligeiramente abaixo da hitbox (2 pixels)
-            Rectangle feetRect = new Rectangle(
-                (int)(Position.X - HITBOX_WIDTH / 2),
-                (int)(Position.Y + HITBOX_HEIGHT / 2),
-                HITBOX_WIDTH,
-                2
-            );
+            // Horizontal
+            Position.X += Velocity.X * dt;
+            ResolveHorizontalCollisions(platforms);
+
+            // Vertical
+            Velocity.Y += Gravity * dt;
+            Position.Y += Velocity.Y * dt;
+            ResolveVerticalCollisions(platforms, enemies, flyingEnemies, chasingEnemies);
+        }
+
+        private void SelectAnimation()
+        {
+            if (!_isOnGround)
+                ChangeAnimation(_jumpAnimation);
+            else if (Math.Abs(Velocity.X) > 1f)
+                ChangeAnimation(_runAnimation);
+            else
+                ChangeAnimation(_idleAnimation);
+        }
+
+        private void EnforceWorldBounds()
+        {
+            // Horizontal clamp
+            float halfW = HitboxWidth / 2f;
+            if (Position.X - halfW < 0f)
+            {
+                Position.X = halfW;
+                Velocity.X = 0f;
+            }
+            else if (Position.X + halfW > _worldWidth)
+            {
+                Position.X = _worldWidth - halfW;
+                Velocity.X = 0f;
+            }
+
+            // Fall death
+            if (Position.Y > _worldHeight + 300f)
+                Kill();
+        }
+
+        // ── Animation helper ─────────────────────────────────────────────────────
+
+        private void ChangeAnimation(Animation next)
+        {
+            if (next == null || next == _currentAnimation) return;
+            _currentAnimation = next;
+            _currentAnimation.Reset();
+        }
+
+        // ── Collision resolution ─────────────────────────────────────────────────
+
+        private bool IsGrounded(IReadOnlyList<Platform> platforms)
+        {
+            var feetProbe = new Rectangle(
+                (int)(Position.X - HitboxWidth / 2),
+                (int)(Position.Y + HitboxHeight / 2),
+                HitboxWidth, 2);
 
             foreach (var platform in platforms)
             {
-                if (feetRect.Intersects(platform.Bounds))
+                if (feetProbe.Intersects(platform.Bounds))
                 {
                     _jumpCount = 0;
                     return true;
@@ -226,120 +346,93 @@ namespace Light_Souls
             return false;
         }
 
-        private void HandleHorizontalCollisions(List<Platform> platforms)
+        private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms)
         {
-            Rectangle playerRect = GetBounds();
+            Rectangle bounds = GetBounds();
             foreach (var platform in platforms)
             {
-                if (playerRect.Intersects(platform.Bounds))
-                {
-                    if (Velocity.X > 0)
-                        Position.X = platform.Bounds.Left - HITBOX_WIDTH / 2;
-                    else if (Velocity.X < 0)
-                        Position.X = platform.Bounds.Right + HITBOX_WIDTH / 2;
-                    Velocity.X = 0;
-                    playerRect = GetBounds();
-                }
+                if (!bounds.Intersects(platform.Bounds)) continue;
+
+                if (Velocity.X > 0f)
+                    Position.X = platform.Bounds.Left  - HitboxWidth / 2;
+                else if (Velocity.X < 0f)
+                    Position.X = platform.Bounds.Right + HitboxWidth / 2;
+
+                Velocity.X = 0f;
+                bounds     = GetBounds();
             }
         }
 
-        private void HandleVerticalCollisions(List<Platform> platforms,List<Enemy> enemies, List<FlyingEnemy> flyingEnemies, List<ChasingEnemy> chasingEnemies)
+        private void ResolveVerticalCollisions(IReadOnlyList<Platform>     platforms,
+                                               IReadOnlyList<Enemy>        enemies,
+                                               IReadOnlyList<FlyingEnemy>  flyingEnemies,
+                                               IReadOnlyList<ChasingEnemy> chasingEnemies)
         {
-            Rectangle playerRect = GetBounds();
+            Rectangle bounds = GetBounds();
             foreach (var platform in platforms)
             {
-                if (playerRect.Intersects(platform.Bounds))
+                if (!bounds.Intersects(platform.Bounds)) continue;
+
+                if (Velocity.Y > 0f) // falling
                 {
-                    if (Velocity.Y > 0) // a cair
+                    Position.Y  = platform.Bounds.Top - HitboxHeight / 2;
+                    Velocity.Y  = 0f;
+                    _isOnGround = true;
+                    _jumpCount  = 0;
+
+                    if (_isStomping)
                     {
-                        // Colocar o fundo da hitbox exactamente no topo da plataforma
-                        Position.Y = platform.Bounds.Top - HITBOX_HEIGHT / 2;
-                        Velocity.Y = 0;
-                        _isOnGround = true;
-                        _jumpCount = 0;
-
-                        if (_isStomping)
-                        {
-                            PushEnemiesAway(enemies, flyingEnemies, chasingEnemies);
-                            Velocity.Y = -300f; // ressalta
-                            _isStomping = false;
-                        }
+                        PushEnemiesAway(enemies, flyingEnemies, chasingEnemies);
+                        Velocity.Y          = StompBounceSpeed;
+                        _isStomping         = false;
+                        _stompCooldownTimer = 0f;
                     }
-                    else if (Velocity.Y < 0) // a subir (bate com cabeça)
-                    {
-                        // Colocar o topo da hitbox no fundo da plataforma
-                        Position.Y = platform.Bounds.Bottom + HITBOX_HEIGHT / 2;
-                        Velocity.Y = 0;
-                    }
-                    playerRect = GetBounds();
                 }
-            }
-        }
-
-        private void PushEnemiesAway(List<Enemy> enemies, List<FlyingEnemy> flyingEnemies, List<ChasingEnemy> chasingEnemies)
-        {
-            float pushForce = 1000f;
-            Vector2 playerCenter = new Vector2(Position.X, Position.Y - HITBOX_HEIGHT / 2);
-            float radius = 100f;
-
-            foreach (var enemy in enemies)
-            {
-                Vector2 enemyCenter = new Vector2(enemy.Position.X + 16, enemy.Position.Y + 16);
-                if (Vector2.Distance(playerCenter, enemyCenter) < radius)
-                    enemy.FlipDirection();
-            }
-
-            foreach (var flying in flyingEnemies)
-            {
-                Vector2 enemyCenter = new Vector2(flying.Position.X + 16, flying.Position.Y + 16);
-                if (Vector2.Distance(playerCenter, enemyCenter) < radius)
+                else if (Velocity.Y < 0f) // rising — hit ceiling
                 {
-                    float dir = (enemyCenter.X < playerCenter.X) ? -1f : 1f;
-                    flying.Velocity = new Vector2(dir * pushForce, -200f);
-                    flying.MarkToReturn(2f);
+                    Position.Y = platform.Bounds.Bottom + HitboxHeight / 2;
+                    Velocity.Y = 0f;
                 }
-            }
 
-            foreach (var chasing in chasingEnemies)
-            {
-                Vector2 enemyCenter = new Vector2(chasing.Position.X + 16, chasing.Position.Y + 16);
-                if (Vector2.Distance(playerCenter, enemyCenter) < radius)
-                    chasing.Stun(1.5f);
+                bounds = GetBounds();
             }
         }
 
-        public void CollectCoins(List<Coin> coins)
+        private void PushEnemiesAway(IReadOnlyList<Enemy>        enemies,
+                                     IReadOnlyList<FlyingEnemy>  flyingEnemies,
+                                     IReadOnlyList<ChasingEnemy> chasingEnemies)
         {
-            Rectangle playerBounds = GetBounds();
-            foreach (var coin in coins)
+            const float PushForce = 1000f;
+            const float Radius    = 100f;
+
+            Vector2 centre = new Vector2(Position.X, Position.Y - HitboxHeight / 2f);
+
+            foreach (var e in enemies)
             {
-                if (!coin.IsCollected && coin.GetBounds().Intersects(playerBounds))
+                if (Vector2.Distance(centre, EnemyCentre(e.Position)) < Radius)
+                    e.FlipDirection();
+            }
+
+            foreach (var fe in flyingEnemies)
+            {
+                Vector2 ec = EnemyCentre(fe.Position);
+                if (Vector2.Distance(centre, ec) < Radius)
                 {
-                    coin.IsCollected = true;    
-                    OnCoinPickup?.Invoke();
+                    float dir = ec.X < centre.X ? -1f : 1f;
+                    fe.Velocity = new Vector2(dir * PushForce, -200f);
+                    fe.MarkToReturn(2f);
                 }
+            }
+
+            foreach (var ce in chasingEnemies)
+            {
+                if (Vector2.Distance(centre, EnemyCentre(ce.Position)) < Radius)
+                    ce.Stun(1.5f);
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            // Removi o _isDead daqui para que a animação de morte APAREÇA
-            if (_currentAnimation == null) return;
-
-            // Efeito de piscar se estiver invencível (opcional)
-            if (IsInvincible && (DateTime.Now.Millisecond / 100) % 2 == 0) return;
-
-            Texture2D currentTexture = _currentAnimation.GetCurrentFrame();
-            SpriteEffects effects = _facingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-
-            Rectangle destRect = new Rectangle(
-                (int)Position.X - (HITBOX_WIDTH / 2),
-                (int)Position.Y - (HITBOX_HEIGHT / 2),
-                HITBOX_WIDTH,
-                HITBOX_HEIGHT
-            );
-
-            spriteBatch.Draw(currentTexture, destRect, null, Color.White, 0f, Vector2.Zero, effects, 0f);
-        }
+        /// <summary>Returns the visual centre of an enemy given its top-left position.</summary>
+        private static Vector2 EnemyCentre(Vector2 topLeft)
+            => topLeft + new Vector2(16f, 16f);
     }
 }

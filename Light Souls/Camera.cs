@@ -1,57 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
 namespace Light_Souls
 {
-    public class Camera
+    /// <summary>
+    /// 2-D scrolling camera that follows a target and clamps to world bounds.
+    /// The camera always operates in the game's virtual coordinate space.
+    /// </summary>
+    public sealed class Camera
     {
-        public Vector2 Position { get; set; }
-        public int ViewportWidth { get; set; }
-        public int ViewportHeight { get; set; }
-        public int WorldWidth { get; set; }   // Total level width (in pixels)
-        public int WorldHeight { get; set; }  // Total level height (in pixels)
+        // ── Properties ───────────────────────────────────────────────────────────
+
+        /// <summary>Top-left corner of the visible area in world space.</summary>
+        public Vector2 Position { get; private set; }
+
+        /// <summary>Width of the viewport in virtual pixels.</summary>
+        public int ViewportWidth { get; }
+
+        /// <summary>Height of the viewport in virtual pixels.</summary>
+        public int ViewportHeight { get; }
+
+        /// <summary>Total width of the loaded level in pixels.</summary>
+        public int WorldWidth { get; }
+
+        /// <summary>Total height of the loaded level in pixels.</summary>
+        public int WorldHeight { get; }
+
+        // ── Constructor ──────────────────────────────────────────────────────────
 
         public Camera(int viewportWidth, int viewportHeight, int worldWidth, int worldHeight)
         {
-            ViewportWidth = viewportWidth;
+            ViewportWidth  = viewportWidth;
             ViewportHeight = viewportHeight;
-            WorldWidth = worldWidth;
-            WorldHeight = worldHeight;
-            Position = Vector2.Zero;
+            WorldWidth     = worldWidth;
+            WorldHeight    = worldHeight;
+            Position       = Vector2.Zero;
         }
 
-        // Follow the target (player), keeping camera within world bounds
-        public void Follow(Vector2 targetPosition)
+        // ── Public methods ───────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Centers the camera on <paramref name="target"/> while keeping the
+        /// view fully inside the world bounds.
+        /// </summary>
+        public void Follow(Vector2 target)
         {
-            // Center camera on target
-            float targetX = targetPosition.X + 16 - (ViewportWidth / 2);   // 16 = half player width (assuming 32px)
-            float targetY = targetPosition.Y + 16 - (ViewportHeight / 2);  // center vertically
+            float x = target.X - ViewportWidth  * 0.5f;
+            float y = target.Y - ViewportHeight * 0.5f;
 
-            // Clamp to world bounds
-            targetX = MathHelper.Clamp(targetX, 0, WorldWidth - ViewportWidth);
-            targetY = MathHelper.Clamp(targetY, 0, WorldHeight - ViewportHeight);
+            x = MathHelper.Clamp(x, 0f, WorldWidth  - ViewportWidth);
+            y = MathHelper.Clamp(y, 0f, WorldHeight - ViewportHeight);
 
-            Position = new Vector2(targetX, targetY);
+            Position = new Vector2(x, y);
         }
 
-        // Transform world coordinates to screen coordinates
-        public Vector2 Transform(Vector2 worldPosition)
-        {
-            return worldPosition - Position;
-        }
-
-        // Transform a rectangle (useful for drawing tiles)
-        public Rectangle Transform(Rectangle worldRectangle)
-        {
-            return new Rectangle(
-                worldRectangle.X - (int)Position.X,
-                worldRectangle.Y - (int)Position.Y,
-                worldRectangle.Width,
-                worldRectangle.Height);
-        }
+        /// <summary>
+        /// Returns a translation matrix that moves world-space coordinates into
+        /// screen space. Pass this to <c>SpriteBatch.Begin</c> as the
+        /// <c>transformMatrix</c> argument.
+        /// </summary>
+        public Matrix GetTransformMatrix()
+            => Matrix.CreateTranslation(-Position.X, -Position.Y, 0f);
     }
 }

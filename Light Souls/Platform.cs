@@ -1,31 +1,46 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Light_Souls
 {
-    public class Platform
+    /// <summary>
+    /// A static, collidable surface. Tiles its texture horizontally to fill
+    /// the full width of its bounding rectangle.
+    /// </summary>
+    public sealed class Platform
     {
-        public Rectangle Bounds;
-        public Texture2D Texture;  // cada plataforma tem a sua própria textura
+        // ── Properties ───────────────────────────────────────────────────────────
+
+        /// <summary>Axis-aligned bounding box used for collision detection.</summary>
+        public Rectangle Bounds { get; }
+
+        // ── Private fields ───────────────────────────────────────────────────────
+
+        private readonly Texture2D _texture;
+
+        // ── Constructor ──────────────────────────────────────────────────────────
 
         public Platform(Rectangle bounds, Texture2D texture)
         {
-            Bounds = bounds;
-            Texture = texture;
+            Bounds   = bounds;
+            _texture = texture;
         }
 
+        // ── Public methods ───────────────────────────────────────────────────────
+
+        /// <summary>Tiles the platform texture across its full width.</summary>
         public void Draw(SpriteBatch spriteBatch)
         {
-            int texW = Texture.Width;
-            int texH = Texture.Height;
-            int startX = Bounds.X;
-            int y = Bounds.Y + (Bounds.Height - texH) / 2; // centraliza verticalmente
+            int tileW = _texture.Width;
+            int tileH = _texture.Height;
+            int y     = Bounds.Y + (Bounds.Height - tileH) / 2; // vertically centred
 
-            for (int x = startX; x < startX + Bounds.Width; x += texW)
+            for (int x = Bounds.X; x < Bounds.Right; x += tileW)
             {
-                int width = System.Math.Min(texW, startX + Bounds.Width - x);
-                Rectangle destRect = new Rectangle(x, y, width, texH);
-                spriteBatch.Draw(Texture, destRect, Color.White);
+                int clippedWidth = System.Math.Min(tileW, Bounds.Right - x);
+                var src  = new Rectangle(0, 0, clippedWidth, tileH);
+                var dest = new Rectangle(x, y, clippedWidth, tileH);
+                spriteBatch.Draw(_texture, dest, src, Color.White);
             }
         }
     }

@@ -1,17 +1,35 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Light_Souls
 {
-    public class Enemy
+    /// <summary>
+    /// A ground-based enemy that patrols a platform and turns around at edges
+    /// or walls. Can be temporarily knocked back by the player's stomp.
+    /// </summary>
+    public sealed class Enemy
     {
+        // ── Constants ────────────────────────────────────────────────────────────
+
+        private const float WalkSpeed    = 100f;
+        private const float Gravity      = 1200f;
+        private const float DampingDecay = 0.95f;   // velocity damping per frame
+
+        // ── Public state ─────────────────────────────────────────────────────────
+
+        /// <summary>World-space top-left position of the enemy sprite.</summary>
         public Vector2 Position;
+
+        /// <summary>Current velocity (may include external impulses from stomp).</summary>
         public Vector2 Velocity;
-        private Texture2D _texture;
-        private float _moveSpeed = 100f;
-        private float _gravity = 1200f;
-        private int _direction = 1;
+
+        // ── Private fields ───────────────────────────────────────────────────────
+
+        private readonly Texture2D _texture;
+        private int _direction = 1;   // +1 = right, -1 = left
+
+        // ── Constructor ──────────────────────────────────────────────────────────
 
         public Enemy(Texture2D texture, Vector2 startPosition)
         {
@@ -20,108 +38,110 @@ namespace Light_Souls
             Velocity = Vector2.Zero;
         }
 
-        public void Update(GameTime gameTime, List<Platform> platforms)
+        // ── Public methods ───────────────────────────────────────────────────────
+
+        public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms)
         {
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Aplica velocidade de empurrão (ex: do stomp)
-            Position.X += Velocity.X * deltaTime;
-            Position.Y += Velocity.Y * deltaTime;
+            // Apply any external impulse (e.g. stomp knockback)
+            Position += Velocity * dt;
 
-            // Movimento normal
-            Velocity.X = _direction * _moveSpeed;
-            Position.X += Velocity.X * deltaTime;
-            HandleHorizontalCollisions(platforms);
+            // Regular walking movement
+            Velocity.X  = _direction * WalkSpeed;
+            Position.X += Velocity.X * dt;
+            ResolveHorizontalCollisions(platforms);
 
-            // Gravidade
-            Velocity.Y += _gravity * deltaTime;
-            Position.Y += Velocity.Y * deltaTime;
-            HandleVerticalCollisions(platforms);
+            // Gravity
+            Velocity.Y += Gravity * dt;
+            Position.Y += Velocity.Y * dt;
+            ResolveVerticalCollisions(platforms);
 
-            CheckTurnAround(platforms);
+            // Turn around at platform edges
+            CheckEdgeTurnaround(platforms);
 
-            // Amortecimento da velocidade extra
-            Velocity.X *= 0.95f;
-            Velocity.Y *= 0.95f;
-            
-            if (Position.Y > 800) 
+            // Gradually damp the external impulse component
+            Velocity *= DampingDecay;
+
+            // Safety: stop falling through the floor far below the level
+            if (Position.Y > 800f)
             {
-                Position.Y = 800;   
-                Velocity.Y = 0;
+                Position.Y = 800f;
+                Velocity.Y = 0f;
             }
         }
 
-        private void HandleHorizontalCollisions(List<Platform> platforms)
-        {
-            Rectangle enemyRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
-            foreach (var platform in platforms)
-            {
-                if (enemyRect.Intersects(platform.Bounds))
-                {
-                    if (Velocity.X > 0)
-                        Position.X = platform.Bounds.Left - _texture.Width;
-                    else if (Velocity.X < 0)
-                        Position.X = platform.Bounds.Right;
-                    _direction = -_direction;
-                    Velocity.X = 0;
-                    break;
-                }
-            }
-        }
-
-        private void HandleVerticalCollisions(List<Platform> platforms)
-        {
-            Rectangle enemyRect = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
-            foreach (var platform in platforms)
-            {
-                if (enemyRect.Intersects(platform.Bounds))
-                {
-                    if (Velocity.Y > 0)
-                    {
-                        Position.Y = platform.Bounds.Top - _texture.Height;
-                        Velocity.Y = 0;
-                    }
-                    else if (Velocity.Y < 0)
-                    {
-                        Position.Y = platform.Bounds.Bottom;
-                        Velocity.Y = 0;
-                    }
-                    break;
-                }
-            }
-        }
-
-        private void CheckTurnAround(List<Platform> platforms)
-        {
-            int frontX = (int)(Position.X + (_direction == 1 ? _texture.Width : 0));
-            int footY = (int)(Position.Y + _texture.Height) + 1;
-            bool hasGround = false;
-            foreach (var platform in platforms)
-            {
-                if (platform.Bounds.Contains(frontX, footY))
-                {
-                    hasGround = true;
-                    break;
-                }
-            }
-            if (!hasGround)
-                _direction = -_direction;
-        }
+        /// <summary>Reverses the patrol direction (called by stomp or wall collision).</summary>
         public void FlipDirection()
         {
             _direction = -_direction;
-            Velocity.X = 0; 
+            Velocity.X = 0f;
         }
 
-        public bool CollidesWith(Rectangle playerBounds)
-        {
-            Rectangle enemyBounds = new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
-            return enemyBounds.Intersects(playerBounds);
-        }
+        /// <returns>True if <paramref name="other"/> overlaps this enemy's bounds.</returns>
+        public bool CollidesWith(Rectangle other)
+            => GetBounds().Intersects(other);
 
         public void Draw(SpriteBatch spriteBatch)
+            => spriteBatch.Draw(_texture, Position, Color.Red);
+
+        // ── Private helpers ──────────────────────────────────────────────────────
+
+        private Rectangle GetBounds()
+            => new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+
+        private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms)
         {
-            spriteBatch.Draw(_texture, Position, Color.Red);
+            Rectangle bounds = GetBounds();
+            foreach (var platform in platforms)
+            {
+                if (!bounds.Intersects(platform.Bounds)) continue;
+
+                if (Velocity.X > 0f)
+                    Position.X = platform.Bounds.Left - _texture.Width;
+                else if (Velocity.X < 0f)
+                    Position.X = platform.Bounds.Right;
+
+                _direction = -_direction;
+                Velocity.X = 0f;
+                break;
+            }
+        }
+
+        private void ResolveVerticalCollisions(IReadOnlyList<Platform> platforms)
+        {
+            Rectangle bounds = GetBounds();
+            foreach (var platform in platforms)
+            {
+                if (!bounds.Intersects(platform.Bounds)) continue;
+
+                if (Velocity.Y > 0f)
+                {
+                    Position.Y = platform.Bounds.Top - _texture.Height;
+                    Velocity.Y = 0f;
+                }
+                else if (Velocity.Y < 0f)
+                {
+                    Position.Y = platform.Bounds.Bottom;
+                    Velocity.Y = 0f;
+                }
+                break;
+            }
+        }
+
+        private void CheckEdgeTurnaround(IReadOnlyList<Platform> platforms)
+        {
+            // Probe one pixel below the leading foot
+            int probeX = (int)(Position.X + (_direction == 1 ? _texture.Width : 0));
+            int probeY = (int)(Position.Y + _texture.Height + 1);
+
+            foreach (var platform in platforms)
+            {
+                if (platform.Bounds.Contains(probeX, probeY))
+                    return; // there is ground ahead — no need to turn
+            }
+
+            _direction = -_direction;
         }
     }
 }
