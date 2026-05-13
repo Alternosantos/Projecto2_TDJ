@@ -9,7 +9,8 @@ PLATFORM 500 189 160 20
 PLATFORM 750 279 200 20
 COIN 240 249
 COIN 530 159
-ENEMY 620 379
+ENEMY 500 190
+CHASING 620 379
 
 # ═══════════════════════════════════════
 # SECTION 2 — The Divided Floor (x: 1100 - 2500)

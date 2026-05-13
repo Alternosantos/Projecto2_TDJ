@@ -47,6 +47,9 @@ namespace Light_Souls
         private Player _player;
         private Level  _level;
         private Camera _camera;
+        private Enemy _enemies;
+        private ChasingEnemy _chasingEnemies;
+        private FlyingEnemy _flyingEnemies;
 
         // ── Asset references ──────────────────────────────────────────────────────
 
@@ -191,9 +194,13 @@ namespace Light_Souls
         private void LoadLevel(int index)
         {
             _currentLevelIndex = index;
-            _level  = new Level(_platformTextures, _enemyTexture, _coinTexture, LevelFiles[index]);
+            _level = new Level(_platformTextures, _enemyTexture, _coinTexture, LevelFiles[index]);
             _player = new Player(_playerTexture, _level.PlayerStart);
             _player.SetWorldBounds(_level.WorldWidth, _level.WorldHeight);
+
+            foreach (var ce in _level.ChasingEnemies)
+                ce.SetWorldBounds(_level.WorldWidth, _level.WorldHeight);
+
             _camera = new Camera(VirtualWidth, VirtualHeight,
                                   _level.WorldWidth, _level.WorldHeight);
         }

@@ -15,10 +15,10 @@ namespace Light_Souls
         // ── Physics constants ────────────────────────────────────────────────────
 
         private const float MoveSpeed         = 300f;
-        private const float JumpPower         = -500f;
+        private const float JumpPower         = -550f;
         private const float Gravity           = 1600f;
-        private const float StompBounceSpeed  = -300f;
-        private const float StompForce        = 800f;          
+        //private const float StompBounceSpeed  = -300f;
+        //private const float StompForce        = 800f;          
         private const float StompCooldown     = 0.5f;
         private const float RespawnDelay      = 3f;
         private const float PostRespawnIFrames = 0.5f;
@@ -281,9 +281,9 @@ namespace Light_Souls
             bool stompPressed = stompHeld && !_stompWasPressed;
             _stompWasPressed = stompHeld;
 
-            if (stompPressed && !_isOnGround && _stompCooldownTimer <= 0f && !_isStomping)
+            if (stompPressed && _stompCooldownTimer <= 0f && !_isStomping)
             {
-                Velocity.Y = StompForce;
+                //Velocity.Y = StompForce;
                 _isStomping = true;
                 _stompCooldownTimer = StompCooldown;
                 OnStomp?.Invoke();
@@ -402,7 +402,7 @@ namespace Light_Souls
                     if (_isStomping)
                     {
                         PushEnemiesAway(enemies, flyingEnemies, chasingEnemies);
-                        Velocity.Y          = StompBounceSpeed;
+                        //Velocity.Y          = StompBounceSpeed;
                         _isStomping         = false;
                         _stompCooldownTimer = 0f;
                     }
@@ -421,8 +421,8 @@ namespace Light_Souls
                                      IReadOnlyList<FlyingEnemy>  flyingEnemies,
                                      IReadOnlyList<ChasingEnemy> chasingEnemies)
         {
-            const float PushForce = 1000f;
-            const float Radius    = 100f;
+            const float PushForce = 1500f;
+            const float Radius    = 150f;
 
             Vector2 centre = new Vector2(Position.X, Position.Y - HitboxHeight / 2f);
 

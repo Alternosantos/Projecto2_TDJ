@@ -27,6 +27,10 @@ namespace Light_Souls
         private int _direction = 1;
         private float _stunTimer = 0f;
         private bool _isStunned = false;
+        // ── World bounds ─────────────────────────────────────────────────────────
+
+        private int _worldWidth = int.MaxValue;
+        private int _worldHeight = int.MaxValue; private int _worldRotation = 0;
 
         // ── Constructor ──────────────────────────────────────────────────────────
 
@@ -53,9 +57,20 @@ namespace Light_Souls
             _stunTimer = 0f;
         }
 
+        /// <summary>
+        /// Informs the player of the level boundaries so it can clamp its
+        /// position and detect falls.
+        /// </summary>
+        public void SetWorldBounds(int width, int height)
+        {
+            _worldWidth = width;
+            _worldHeight = height;
+        }
+
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms, Player player)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
 
             Position += Velocity * dt;
 
@@ -186,5 +201,7 @@ namespace Light_Souls
 
             _direction = -_direction;
         }
+
+
     }
 }
