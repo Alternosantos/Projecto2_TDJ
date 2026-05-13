@@ -222,3 +222,5 @@ C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Conte
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.xnb
 C:\Users\paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb

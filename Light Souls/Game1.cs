@@ -29,8 +29,8 @@ namespace Light_Souls
 
         private static readonly string[] LevelFiles =
         {
-            "Content/Levels/Level1.txt",
-            "Content/Levels/Level2.txt",
+            //"Content/Levels/Level1.txt",
+            //"Content/Levels/Level2.txt",
             "Content/Levels/Level3.txt",
             "Content/Levels/Level4.txt",
         };
@@ -402,6 +402,7 @@ namespace Light_Souls
             // Trigger YOU DIED if player just died this frame
             if (!wasDeadBefore && _player.IsDead && !_showYouDied)
                 TriggerYouDied();
+                
 
             // Trigger level complete when all coins are collected
             bool hasCoins = _level.Coins.Count > 0;
@@ -431,6 +432,10 @@ namespace Light_Souls
 
             foreach (var ce in _level.ChasingEnemies)
                 if (ce.CollidesWith(pb)) { _player.Kill(); return; }
+
+            foreach (var ce in _level.Enemies)
+                if (ce.CollidesWith(pb)) { _player.Kill(); return; }
+
         }
 
         private void TriggerYouDied()

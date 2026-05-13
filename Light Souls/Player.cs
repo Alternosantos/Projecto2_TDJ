@@ -18,6 +18,7 @@ namespace Light_Souls
         private const float JumpPower         = -500f;
         private const float Gravity           = 1600f;
         private const float StompBounceSpeed  = -300f;
+        private const float StompForce        = 800f;          
         private const float StompCooldown     = 0.5f;
         private const float RespawnDelay      = 3f;
         private const float PostRespawnIFrames = 0.5f;
@@ -71,6 +72,9 @@ namespace Light_Souls
 
         private bool  _isStomping;
         private float _stompCooldownTimer;
+        private bool _stompWasPressed;
+        public Action OnStomp;
+
 
         // ── Death / respawn ───────────────────────────────────────────────────────
 
@@ -240,6 +244,8 @@ namespace Light_Souls
                     _isStomping = false;
             }
         }
+        
+
 
         private void ReadInput(float dt, IReadOnlyList<Platform> platforms)
         {
@@ -268,6 +274,19 @@ namespace Light_Souls
                 _jumpCount++;
                 _isOnGround = false;
                 OnJump?.Invoke();
+            }
+
+            // --- STOMP (tecla E) -------------------------------------------------
+            bool stompHeld = kb.IsKeyDown(Keys.E);
+            bool stompPressed = stompHeld && !_stompWasPressed;
+            _stompWasPressed = stompHeld;
+
+            if (stompPressed && !_isOnGround && _stompCooldownTimer <= 0f && !_isStomping)
+            {
+                Velocity.Y = StompForce;
+                _isStomping = true;
+                _stompCooldownTimer = StompCooldown;
+                OnStomp?.Invoke();
             }
         }
 

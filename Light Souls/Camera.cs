@@ -48,8 +48,9 @@ namespace Light_Souls
             float y = target.Y - ViewportHeight * 0.5f;
 
             x = MathHelper.Clamp(x, 0f, WorldWidth  - ViewportWidth);
-            y = MathHelper.Clamp(y, 0f, WorldHeight - ViewportHeight);
-
+            float maxY = WorldHeight - ViewportHeight;
+            if (y > maxY)
+                y = maxY;
             Position = new Vector2(x, y);
         }
 

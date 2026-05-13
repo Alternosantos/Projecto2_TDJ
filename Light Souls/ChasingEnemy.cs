@@ -5,52 +5,58 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Light_Souls
 {
-    /// <summary>
-    /// A ground-based enemy that patrols normally but accelerates toward the
-    /// player when they come within aggro range. Can be temporarily stunned
-    /// by the player's stomp attack.
-    /// </summary>
     public sealed class ChasingEnemy
     {
         // ── Constants ────────────────────────────────────────────────────────────
 
-        private const float PatrolSpeed  = 70f;
-        private const float ChaseSpeed   = 150f;
-        private const float Gravity      = 1200f;
-        private const float AggroRange   = 200f;
+        private const float PatrolSpeed = 70f;
+        private const float ChaseSpeed = 80f;
+        private const float Gravity = 1200f;
+        private const float AggroRange = 100f;
         private const float DampingDecay = 0.95f;
 
         // ── Public state ─────────────────────────────────────────────────────────
 
-        /// <summary>World-space top-left position.</summary>
         public Vector2 Position;
-
-        /// <summary>Current velocity (includes stomp impulses).</summary>
         public Vector2 Velocity;
 
         // ── Private fields ───────────────────────────────────────────────────────
 
         private readonly Texture2D _texture;
-        private int   _direction  = 1;
-        private float _stunTimer  = 0f;
-        private bool  _isStunned  = false;
+        private readonly Vector2 _spawnPosition; // ← posição de spawn guardada
+        private int _direction = 1;
+        private float _stunTimer = 0f;
+        private bool _isStunned = false;
 
         // ── Constructor ──────────────────────────────────────────────────────────
 
         public ChasingEnemy(Texture2D texture, Vector2 startPosition)
         {
             _texture = texture;
+            _spawnPosition = startPosition; // ← guardado uma vez, nunca muda
             Position = startPosition;
             Velocity = Vector2.Zero;
         }
 
         // ── Public methods ───────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Volta à posição de spawn e limpa todo o estado.
+        /// Chama isto quando o player morre.
+        /// </summary>
+        public void Reset()
+        {
+            Position = _spawnPosition;
+            Velocity = Vector2.Zero;
+            _direction = 1;
+            _isStunned = false;
+            _stunTimer = 0f;
+        }
+
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms, Player player)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Apply external impulse first
             Position += Velocity * dt;
 
             if (_isStunned)
@@ -62,7 +68,6 @@ namespace Light_Souls
             UpdateMovement(dt, player, platforms);
         }
 
-        /// <summary>Stuns the enemy for <paramref name="duration"/> seconds.</summary>
         public void Stun(float duration = 1.5f)
         {
             _isStunned = true;
@@ -70,7 +75,6 @@ namespace Light_Souls
             Velocity.X = 0f;
         }
 
-        /// <returns>True if <paramref name="other"/> overlaps this enemy's bounds.</returns>
         public bool CollidesWith(Rectangle other)
             => GetBounds().Intersects(other);
 
@@ -85,7 +89,6 @@ namespace Light_Souls
             if (_stunTimer <= 0f)
                 _isStunned = false;
 
-            // Still affected by gravity while stunned
             Velocity.Y += Gravity * dt;
             Position.Y += Velocity.Y * dt;
             ResolveVerticalCollisions(platforms);
@@ -94,8 +97,8 @@ namespace Light_Souls
 
         private void UpdateMovement(float dt, Player player, IReadOnlyList<Platform> platforms)
         {
-            float distX      = player.Position.X - Position.X;
-            bool  isAggro    = Math.Abs(distX) < AggroRange;
+            float distX = player.Position.X - Position.X;
+            bool isAggro = Math.Abs(distX) < AggroRange;
 
             if (isAggro)
             {
@@ -119,7 +122,6 @@ namespace Light_Souls
 
             Velocity.X *= DampingDecay;
 
-            // Safety floor
             if (Position.Y > 800f)
             {
                 Position.Y = 800f;
@@ -142,7 +144,6 @@ namespace Light_Souls
                 else if (Velocity.X < 0f)
                     Position.X = platform.Bounds.Right;
 
-                // Only flip direction when patrolling, not while chasing
                 if (!isChasing)
                     _direction = -_direction;
 
