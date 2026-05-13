@@ -43,6 +43,7 @@ namespace Light_Souls
 
         /// <summary>True while the player cannot take damage.</summary>
         public bool IsInvincible => _invincibleTimer > 0f && !_isDead;
+        public Action OnRespawn;
 
         // ── Events ───────────────────────────────────────────────────────────────
 
@@ -233,6 +234,7 @@ namespace Light_Souls
             _invincibleTimer = PostRespawnIFrames;
             _jumpCount       = 0;
             ChangeAnimation(_idleAnimation);
+            OnRespawn?.Invoke();
         }
 
         private void UpdateStompCooldown(float dt)

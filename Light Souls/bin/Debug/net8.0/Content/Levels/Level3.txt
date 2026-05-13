@@ -4,13 +4,14 @@ START 100 299
 # SECTION 1 — Easy Start (x: 0 - 1000)
 # ═══════════════════════════════════════
 PLATFORM 100 399 1000 32
+PLATFORM 100 299 160 20
 PLATFORM 200 279 160 20
 PLATFORM 500 189 160 20
 PLATFORM 750 279 200 20
 COIN 240 249
 COIN 530 159
 ENEMY 500 190
-CHASING 620 379
+CHASING 200 379
 
 # ═══════════════════════════════════════
 # SECTION 2 — The Divided Floor (x: 1100 - 2500)

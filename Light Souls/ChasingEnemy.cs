@@ -14,6 +14,7 @@ namespace Light_Souls
         private const float Gravity = 1200f;
         private const float AggroRange = 100f;
         private const float DampingDecay = 0.95f;
+        private const float EdgeCheckCooldown = 0.3f; // segundos sem edge-check após reset
 
         // ── Public state ─────────────────────────────────────────────────────────
 
@@ -23,54 +24,59 @@ namespace Light_Souls
         // ── Private fields ───────────────────────────────────────────────────────
 
         private readonly Texture2D _texture;
-        private readonly Vector2 _spawnPosition; // ← posição de spawn guardada
+        private readonly Vector2 _spawnPosition;
+
+        // Posição gravada depois de aterrar pela primeira vez
+        private Vector2 _settledSpawnPosition;
+        private bool _hasSettled = false;
+
+        // Cooldown que desativa o edge-check nos primeiros frames após reset
+        private float _edgeCheckTimer = 0f;
+
         private int _direction = 1;
         private float _stunTimer = 0f;
         private bool _isStunned = false;
+
         // ── World bounds ─────────────────────────────────────────────────────────
 
         private int _worldWidth = int.MaxValue;
-        private int _worldHeight = int.MaxValue; private int _worldRotation = 0;
+        private int _worldHeight = int.MaxValue;
 
         // ── Constructor ──────────────────────────────────────────────────────────
 
         public ChasingEnemy(Texture2D texture, Vector2 startPosition)
         {
             _texture = texture;
-            _spawnPosition = startPosition; // ← guardado uma vez, nunca muda
+            _spawnPosition = startPosition;
+            _settledSpawnPosition = startPosition;
             Position = startPosition;
             Velocity = Vector2.Zero;
         }
 
         // ── Public methods ───────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Volta à posição de spawn e limpa todo o estado.
-        /// Chama isto quando o player morre.
-        /// </summary>
-        public void Reset()
-        {
-            Position = _spawnPosition;
-            Velocity = Vector2.Zero;
-            _direction = 1;
-            _isStunned = false;
-            _stunTimer = 0f;
-        }
-
-        /// <summary>
-        /// Informs the player of the level boundaries so it can clamp its
-        /// position and detect falls.
-        /// </summary>
         public void SetWorldBounds(int width, int height)
         {
             _worldWidth = width;
             _worldHeight = height;
         }
 
+        public void Reset()
+        {
+            Position = _settledSpawnPosition;
+            Velocity = Vector2.Zero;
+            _direction = 1;
+            _isStunned = false;
+            _stunTimer = 0f;
+            _edgeCheckTimer = EdgeCheckCooldown; // desativa edge-check brevemente
+        }
+
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms, Player player)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            if (_edgeCheckTimer > 0f)
+                _edgeCheckTimer -= dt;
 
             Position += Velocity * dt;
 
@@ -132,14 +138,15 @@ namespace Light_Souls
             Position.Y += Velocity.Y * dt;
             ResolveVerticalCollisions(platforms);
 
-            if (!isAggro)
+            // Edge check só corre depois do cooldown ter expirado
+            if (!isAggro && _edgeCheckTimer <= 0f)
                 CheckEdgeTurnaround(platforms);
 
             Velocity.X *= DampingDecay;
 
-            if (Position.Y > 800f)
+            if (Position.Y > _worldHeight + 300f)
             {
-                Position.Y = 800f;
+                Position.Y = _worldHeight + 300f;
                 Velocity.Y = 0f;
             }
         }
@@ -178,6 +185,13 @@ namespace Light_Souls
                 {
                     Position.Y = platform.Bounds.Top - _texture.Height;
                     Velocity.Y = 0f;
+
+                    // Grava a posição estabilizada na primeira aterragem
+                    if (!_hasSettled)
+                    {
+                        _settledSpawnPosition = Position;
+                        _hasSettled = true;
+                    }
                 }
                 else if (Velocity.Y < 0f)
                 {
@@ -194,14 +208,9 @@ namespace Light_Souls
             int probeY = (int)(Position.Y + _texture.Height + 1);
 
             foreach (var platform in platforms)
-            {
-                if (platform.Bounds.Contains(probeX, probeY))
-                    return;
-            }
+                if (platform.Bounds.Contains(probeX, probeY)) return;
 
             _direction = -_direction;
         }
-
-
     }
 }

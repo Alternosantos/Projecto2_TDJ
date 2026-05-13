@@ -29,8 +29,8 @@ namespace Light_Souls
 
         private static readonly string[] LevelFiles =
         {
-            //"Content/Levels/Level1.txt",
-            //"Content/Levels/Level2.txt",
+            "Content/Levels/Level1.txt",
+            "Content/Levels/Level2.txt",
             "Content/Levels/Level3.txt",
             "Content/Levels/Level4.txt",
         };
@@ -203,6 +203,15 @@ namespace Light_Souls
 
             _camera = new Camera(VirtualWidth, VirtualHeight,
                                   _level.WorldWidth, _level.WorldHeight);
+
+            // ── Reset tudo quando o player respawna ──────────────────────────────
+            _player.OnRespawn += () =>
+            {
+                foreach (var e in _level.Enemies) e.Reset();
+                foreach (var fe in _level.FlyingEnemies) fe.Reset();
+                foreach (var ce in _level.ChasingEnemies) ce.Reset();
+                foreach (var c in _level.Coins) c.Reset();
+            };
         }
 
         private void AdvanceLevel()
