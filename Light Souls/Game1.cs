@@ -199,7 +199,20 @@ namespace Light_Souls
             _player.SetWorldBounds(_level.WorldWidth, _level.WorldHeight);
 
             foreach (var ce in _level.ChasingEnemies)
+            {
                 ce.SetWorldBounds(_level.WorldWidth, _level.WorldHeight);
+                ce.LoadAnimation(BuildAnimation("ChasingE", 1f / 8f, true));
+            }
+
+            foreach (var fe in _level.FlyingEnemies)
+            {
+                fe.LoadAnimation(BuildAnimation("FlyingE", 1f / 8f, true));
+            }
+
+            foreach (var e in _level.Enemies)
+            {
+                e.LoadAnimation(BuildAnimation("E", 1f / 8f, true));
+            }
 
             _camera = new Camera(VirtualWidth, VirtualHeight,
                                   _level.WorldWidth, _level.WorldHeight);
@@ -245,10 +258,10 @@ namespace Light_Souls
         private Animation BuildAnimation(string folder, float frameTime, bool looping)
         {
             var frames = new List<Texture2D>();
-            for (int i = 0; ; i++)
+            for (int i = 0; i < 50; i++)
             {
                 try   { frames.Add(Content.Load<Texture2D>($"{folder}/{i}")); }
-                catch { break; }
+                catch { continue; }
             }
 
             if (frames.Count == 0)
@@ -411,6 +424,8 @@ namespace Light_Souls
             if (!_player.IsDead)
                 CheckEnemyCollisions();
 
+            PreventEnemyOverlap();
+
             // Collect coins
             if (!_player.IsDead)
                 _player.CollectCoins(_level.Coins);
@@ -426,6 +441,54 @@ namespace Light_Souls
                 TriggerLevelComplete();
 
             _camera.Follow(_player.Position);
+        }
+
+        private void PreventEnemyOverlap()
+        {
+            for (int i = 0; i < _level.Enemies.Count; i++)
+            {
+                for (int j = i + 1; j < _level.Enemies.Count; j++)
+                {
+                    if (_level.Enemies[i].Bounds.Intersects(_level.Enemies[j].Bounds))
+                        ResolveOverlap(_level.Enemies[i], _level.Enemies[j]);
+                }
+                foreach (var ce in _level.ChasingEnemies)
+                {
+                    if (_level.Enemies[i].Bounds.Intersects(ce.Bounds))
+                        ResolveOverlap(_level.Enemies[i], ce);
+                }
+            }
+
+            for (int i = 0; i < _level.ChasingEnemies.Count; i++)
+            {
+                for (int j = i + 1; j < _level.ChasingEnemies.Count; j++)
+                {
+                    if (_level.ChasingEnemies[i].Bounds.Intersects(_level.ChasingEnemies[j].Bounds))
+                        ResolveOverlap(_level.ChasingEnemies[i], _level.ChasingEnemies[j]);
+                }
+            }
+        }
+
+        private void ResolveOverlap(dynamic e1, dynamic e2)
+        {
+            if (System.Math.Abs((float)(e1.Position.Y - e2.Position.Y)) > 20f) return;
+
+            float center1 = e1.Position.X + e1.Bounds.Width / 2f;
+            float center2 = e2.Position.X + e2.Bounds.Width / 2f;
+
+            if (center1 < center2)
+            {
+                e1.Position.X -= 1f;
+                e2.Position.X += 1f;
+            }
+            else
+            {
+                e1.Position.X += 1f;
+                e2.Position.X -= 1f;
+            }
+
+            try { e1.FlipDirection(); } catch { }
+            try { e2.FlipDirection(); } catch { }
         }
 
         private void CheckEnemyCollisions()

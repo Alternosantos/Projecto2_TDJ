@@ -9,12 +9,18 @@ namespace Light_Souls
         private const float WalkSpeed = 100f;
         private const float Gravity = 1200f;
         private const float DampingDecay = 0.95f;
+        private const float Scale = 0.5f;
 
         public Vector2 Position;
         public Vector2 Velocity;
 
         private readonly Texture2D _texture;
         private readonly Vector2 _spawnPosition;   // ← guardado no construtor
+        private Animation _walkAnimation;
+
+        private int CurrentWidth => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Width : _texture.Width) * Scale);
+        private int CurrentHeight => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Height : _texture.Height) * Scale);
+
         private int _direction = 1;
 
         public Enemy(Texture2D texture, Vector2 startPosition)
@@ -33,13 +39,22 @@ namespace Light_Souls
             Position = _spawnPosition;
             Velocity = Vector2.Zero;
             _direction = 1;
+            _walkAnimation?.Reset();
         }
 
         // ── Update / helpers ─────────────────────────────────────────────────────
 
+        public void LoadAnimation(Animation anim)
+        {
+            _walkAnimation = anim;
+        }
+
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_walkAnimation != null && System.Math.Abs(Velocity.X) > 1f)
+                _walkAnimation.Update(dt);
 
             Position += Velocity * dt;
 
@@ -71,11 +86,19 @@ namespace Light_Souls
         public bool CollidesWith(Rectangle other)
             => GetBounds().Intersects(other);
 
+        public Rectangle Bounds => GetBounds();
+
         public void Draw(SpriteBatch spriteBatch)
-            => spriteBatch.Draw(_texture, Position, Color.Red);
+        {
+            Texture2D tex = _walkAnimation?.GetCurrentFrame() ?? _texture;
+            Color color = _walkAnimation != null ? Color.White : Color.Red;
+            SpriteEffects effect = _direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            
+            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, effect, 0f);
+        }
 
         private Rectangle GetBounds()
-            => new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+            => new Rectangle((int)Position.X, (int)Position.Y, CurrentWidth, CurrentHeight);
 
         private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms)
         {
@@ -85,7 +108,7 @@ namespace Light_Souls
                 if (!bounds.Intersects(platform.Bounds)) continue;
 
                 if (Velocity.X > 0f)
-                    Position.X = platform.Bounds.Left - _texture.Width;
+                    Position.X = platform.Bounds.Left - CurrentWidth;
                 else if (Velocity.X < 0f)
                     Position.X = platform.Bounds.Right;
 
@@ -104,7 +127,7 @@ namespace Light_Souls
 
                 if (Velocity.Y > 0f)
                 {
-                    Position.Y = platform.Bounds.Top - _texture.Height;
+                    Position.Y = platform.Bounds.Top - CurrentHeight;
                     Velocity.Y = 0f;
                 }
                 else if (Velocity.Y < 0f)
@@ -118,8 +141,8 @@ namespace Light_Souls
 
         private void CheckEdgeTurnaround(IReadOnlyList<Platform> platforms)
         {
-            int probeX = (int)(Position.X + (_direction == 1 ? _texture.Width : 0));
-            int probeY = (int)(Position.Y + _texture.Height + 1);
+            int probeX = (int)(Position.X + (_direction == 1 ? CurrentWidth : 0));
+            int probeY = (int)(Position.Y + CurrentHeight + 1);
 
             foreach (var platform in platforms)
                 if (platform.Bounds.Contains(probeX, probeY)) return;

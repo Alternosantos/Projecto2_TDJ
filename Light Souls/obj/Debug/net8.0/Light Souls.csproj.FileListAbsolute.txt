@@ -224,3 +224,16 @@ C:\Users\paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Conte
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\0.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\1.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\2.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\3.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\0.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\1.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\2.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\0.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\1.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\3.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\4.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\5.xnb
+C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\6.xnb

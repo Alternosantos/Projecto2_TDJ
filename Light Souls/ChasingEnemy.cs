@@ -15,6 +15,7 @@ namespace Light_Souls
         private const float AggroRange = 100f;
         private const float DampingDecay = 0.95f;
         private const float EdgeCheckCooldown = 0.3f; // segundos sem edge-check após reset
+        private const float Scale = 0.5f;
 
         // ── Public state ─────────────────────────────────────────────────────────
 
@@ -25,6 +26,10 @@ namespace Light_Souls
 
         private readonly Texture2D _texture;
         private readonly Vector2 _spawnPosition;
+        private Animation _runAnimation;
+
+        private int CurrentWidth => (int)((_runAnimation != null ? _runAnimation.Frames[0].Width : _texture.Width) * Scale);
+        private int CurrentHeight => (int)((_runAnimation != null ? _runAnimation.Frames[0].Height : _texture.Height) * Scale);
 
         // Posição gravada depois de aterrar pela primeira vez
         private Vector2 _settledSpawnPosition;
@@ -55,6 +60,11 @@ namespace Light_Souls
 
         // ── Public methods ───────────────────────────────────────────────────────
 
+        public void LoadAnimation(Animation anim)
+        {
+            _runAnimation = anim;
+        }
+
         public void SetWorldBounds(int width, int height)
         {
             _worldWidth = width;
@@ -69,6 +79,7 @@ namespace Light_Souls
             _isStunned = false;
             _stunTimer = 0f;
             _edgeCheckTimer = EdgeCheckCooldown; // desativa edge-check brevemente
+            _runAnimation?.Reset();
         }
 
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms, Player player)
@@ -77,6 +88,9 @@ namespace Light_Souls
 
             if (_edgeCheckTimer > 0f)
                 _edgeCheckTimer -= dt;
+
+            if (_runAnimation != null && Math.Abs(Velocity.X) > 1f && !_isStunned)
+                _runAnimation.Update(dt);
 
             Position += Velocity * dt;
 
@@ -96,11 +110,25 @@ namespace Light_Souls
             Velocity.X = 0f;
         }
 
+        public void FlipDirection()
+        {
+            _direction = -_direction;
+            Velocity.X = 0f;
+        }
+
         public bool CollidesWith(Rectangle other)
             => GetBounds().Intersects(other);
 
+        public Rectangle Bounds => GetBounds();
+
         public void Draw(SpriteBatch spriteBatch)
-            => spriteBatch.Draw(_texture, Position, Color.Orange);
+        {
+            Texture2D tex = _runAnimation?.GetCurrentFrame() ?? _texture;
+            Color color = _runAnimation != null ? Color.White : Color.Orange;
+            SpriteEffects effect = _direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            
+            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, effect, 0f);
+        }
 
         // ── Private helpers ──────────────────────────────────────────────────────
 
@@ -152,7 +180,7 @@ namespace Light_Souls
         }
 
         private Rectangle GetBounds()
-            => new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+            => new Rectangle((int)Position.X, (int)Position.Y, CurrentWidth, CurrentHeight);
 
         private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms, bool isChasing)
         {
@@ -162,7 +190,7 @@ namespace Light_Souls
                 if (!bounds.Intersects(platform.Bounds)) continue;
 
                 if (Velocity.X > 0f)
-                    Position.X = platform.Bounds.Left - _texture.Width;
+                    Position.X = platform.Bounds.Left - CurrentWidth;
                 else if (Velocity.X < 0f)
                     Position.X = platform.Bounds.Right;
 
@@ -183,7 +211,7 @@ namespace Light_Souls
 
                 if (Velocity.Y > 0f)
                 {
-                    Position.Y = platform.Bounds.Top - _texture.Height;
+                    Position.Y = platform.Bounds.Top - CurrentHeight;
                     Velocity.Y = 0f;
 
                     // Grava a posição estabilizada na primeira aterragem
@@ -204,8 +232,8 @@ namespace Light_Souls
 
         private void CheckEdgeTurnaround(IReadOnlyList<Platform> platforms)
         {
-            int probeX = (int)(Position.X + (_direction == 1 ? _texture.Width : 0));
-            int probeY = (int)(Position.Y + _texture.Height + 1);
+            int probeX = (int)(Position.X + (_direction == 1 ? CurrentWidth : 0));
+            int probeY = (int)(Position.Y + CurrentHeight + 1);
 
             foreach (var platform in platforms)
                 if (platform.Bounds.Contains(probeX, probeY)) return;

@@ -8,6 +8,7 @@ namespace Light_Souls
     {
         private const float PatrolSpeed = 80f;
         private const float DampingDecay = 0.95f;
+        private const float Scale = 0.3f;
 
         public Vector2 Position;
         public Vector2 Velocity;
@@ -17,6 +18,10 @@ namespace Light_Souls
         private readonly float _rightBound;
         private readonly float _originalY;
         private readonly Vector2 _spawnPosition;   // ← guardado no construtor
+        private Animation _flyAnimation;
+
+        private int CurrentWidth => (int)((_flyAnimation != null ? _flyAnimation.Frames[0].Width : _texture.Width) * Scale);
+        private int CurrentHeight => (int)((_flyAnimation != null ? _flyAnimation.Frames[0].Height : _texture.Height) * Scale);
 
         private int _direction = 1;
         private float _returnTimer = 0f;
@@ -44,13 +49,21 @@ namespace Light_Souls
             _direction = 1;
             _returningToY = false;
             _returnTimer = 0f;
+            _flyAnimation?.Reset();
         }
 
         // ── Update / helpers ─────────────────────────────────────────────────────
 
+        public void LoadAnimation(Animation anim)
+        {
+            _flyAnimation = anim;
+        }
+
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            _flyAnimation?.Update(dt);
 
             Position += Velocity * dt;
 
@@ -78,9 +91,9 @@ namespace Light_Souls
                 Position.X = _leftBound;
                 _direction = 1;
             }
-            else if (Position.X + _texture.Width >= _rightBound)
+            else if (Position.X + CurrentWidth >= _rightBound)
             {
-                Position.X = _rightBound - _texture.Width;
+                Position.X = _rightBound - CurrentWidth;
                 _direction = -1;
             }
 
@@ -93,13 +106,26 @@ namespace Light_Souls
             _returnTimer = delay;
         }
 
+        public void FlipDirection()
+        {
+            _direction = -_direction;
+        }
+
         public bool CollidesWith(Rectangle other)
             => GetBounds().Intersects(other);
 
+        public Rectangle Bounds => GetBounds();
+
         public void Draw(SpriteBatch spriteBatch)
-            => spriteBatch.Draw(_texture, Position, Color.Purple);
+        {
+            Texture2D tex = _flyAnimation?.GetCurrentFrame() ?? _texture;
+            Color color = _flyAnimation != null ? Color.White : Color.Purple;
+            SpriteEffects effect = _direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            
+            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, effect, 0f);
+        }
 
         private Rectangle GetBounds()
-            => new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+            => new Rectangle((int)Position.X, (int)Position.Y, CurrentWidth, CurrentHeight);
     }
 }
