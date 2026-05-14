@@ -10,13 +10,18 @@ namespace Light_Souls
         private const float Gravity = 1200f;
         private const float DampingDecay = 0.95f;
         private const float Scale = 0.5f;
+        private const float EdgeCheckCooldown = 0.3f;
 
         public Vector2 Position;
         public Vector2 Velocity;
 
         private readonly Texture2D _texture;
-        private readonly Vector2 _spawnPosition;   // ← guardado no construtor
+        private readonly Vector2 _spawnPosition;
         private Animation _walkAnimation;
+
+        private Vector2 _settledSpawnPosition;
+        private bool _hasSettled = false;
+        private float _edgeCheckTimer;           
 
         private int CurrentWidth => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Width : _texture.Width) * Scale);
         private int CurrentHeight => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Height : _texture.Height) * Scale);
@@ -27,31 +32,28 @@ namespace Light_Souls
         {
             _texture = texture;
             _spawnPosition = startPosition;
+            _settledSpawnPosition = startPosition;
             Position = startPosition;
             Velocity = Vector2.Zero;
+            _edgeCheckTimer = EdgeCheckCooldown;
         }
 
-        // ── Reset ────────────────────────────────────────────────────────────────
+        public void LoadAnimation(Animation anim) => _walkAnimation = anim;
 
-        /// <summary>Volta à posição de spawn. Chamado quando o player morre.</summary>
         public void Reset()
         {
-            Position = _spawnPosition;
+            Position = _settledSpawnPosition;
             Velocity = Vector2.Zero;
             _direction = 1;
+            _edgeCheckTimer = EdgeCheckCooldown;
             _walkAnimation?.Reset();
-        }
-
-        // ── Update / helpers ─────────────────────────────────────────────────────
-
-        public void LoadAnimation(Animation anim)
-        {
-            _walkAnimation = anim;
         }
 
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_edgeCheckTimer > 0f) _edgeCheckTimer -= dt;
 
             if (_walkAnimation != null && System.Math.Abs(Velocity.X) > 1f)
                 _walkAnimation.Update(dt);
@@ -66,35 +68,24 @@ namespace Light_Souls
             Position.Y += Velocity.Y * dt;
             ResolveVerticalCollisions(platforms);
 
-            CheckEdgeTurnaround(platforms);
+            if (_edgeCheckTimer <= 0f)
+                CheckEdgeTurnaround(platforms);
 
             Velocity *= DampingDecay;
 
-            if (Position.Y > 800f)
-            {
-                Position.Y = 800f;
-                Velocity.Y = 0f;
-            }
+            if (Position.Y > 800f) { Position.Y = 800f; Velocity.Y = 0f; }
         }
 
-        public void FlipDirection()
-        {
-            _direction = -_direction;
-            Velocity.X = 0f;
-        }
-
-        public bool CollidesWith(Rectangle other)
-            => GetBounds().Intersects(other);
-
+        public void FlipDirection() { _direction = -_direction; Velocity.X = 0f; }
+        public bool CollidesWith(Rectangle other) => GetBounds().Intersects(other);
         public Rectangle Bounds => GetBounds();
 
         public void Draw(SpriteBatch spriteBatch)
         {
             Texture2D tex = _walkAnimation?.GetCurrentFrame() ?? _texture;
             Color color = _walkAnimation != null ? Color.White : Color.Red;
-            SpriteEffects effect = _direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            
-            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, effect, 0f);
+            SpriteEffects fx = _direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, fx, 0f);
         }
 
         private Rectangle GetBounds()
@@ -106,12 +97,8 @@ namespace Light_Souls
             foreach (var platform in platforms)
             {
                 if (!bounds.Intersects(platform.Bounds)) continue;
-
-                if (Velocity.X > 0f)
-                    Position.X = platform.Bounds.Left - CurrentWidth;
-                else if (Velocity.X < 0f)
-                    Position.X = platform.Bounds.Right;
-
+                if (Velocity.X > 0f) Position.X = platform.Bounds.Left - CurrentWidth;
+                else if (Velocity.X < 0f) Position.X = platform.Bounds.Right;
                 _direction = -_direction;
                 Velocity.X = 0f;
                 break;
@@ -124,11 +111,11 @@ namespace Light_Souls
             foreach (var platform in platforms)
             {
                 if (!bounds.Intersects(platform.Bounds)) continue;
-
-                if (Velocity.Y > 0f)
+                if (Velocity.Y >= 0f)
                 {
                     Position.Y = platform.Bounds.Top - CurrentHeight;
                     Velocity.Y = 0f;
+                    if (!_hasSettled) { _settledSpawnPosition = Position; _hasSettled = true; }
                 }
                 else if (Velocity.Y < 0f)
                 {
@@ -143,11 +130,11 @@ namespace Light_Souls
         {
             int probeX = (int)(Position.X + (_direction == 1 ? CurrentWidth : 0));
             int probeY = (int)(Position.Y + CurrentHeight + 1);
-
             foreach (var platform in platforms)
                 if (platform.Bounds.Contains(probeX, probeY)) return;
-
             _direction = -_direction;
         }
+
+
     }
 }

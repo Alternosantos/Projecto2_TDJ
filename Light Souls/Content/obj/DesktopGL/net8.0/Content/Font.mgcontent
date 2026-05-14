@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Font.spritefont</SourceFile>
-  <SourceTime>2026-05-12T07:18:35.7379451+01:00</SourceTime>
-  <DestFile>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Font.xnb</DestFile>
-  <DestTime>2026-05-14T03:34:44.9449512+01:00</DestTime>
+  <SourceFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Font.spritefont</SourceFile>
+  <SourceTime>2026-05-12T10:26:42.9236766+01:00</SourceTime>
+  <DestFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Font.xnb</DestFile>
+  <DestTime>2026-05-14T11:23:27.5852586+01:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
   <ImporterTime>2025-06-02T11:31:02+01:00</ImporterTime>
   <Processor>FontDescriptionProcessor</Processor>

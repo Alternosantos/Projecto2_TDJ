@@ -1,8 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using System;
+using System.Collections.Generic;
 
 namespace Light_Souls
 {
@@ -41,6 +42,7 @@ namespace Light_Souls
         private SpriteBatch    _spriteBatch;
         private RenderTarget2D _renderTarget;   // offscreen buffer at VirtualWidth × VirtualHeight
         private Texture2D      _pixel;          // 1×1 white texture for filled rectangles
+        private Song _backgroundMusic;
 
         // ── World objects ─────────────────────────────────────────────────────────
 
@@ -66,6 +68,12 @@ namespace Light_Souls
         private Animation _runAnim;
         private Animation _jumpAnim;
         private Animation _deadAnim;
+        private List<Texture2D> _enemyFrames;
+        private List<Texture2D> _chasingEnemyFrames;
+        private List<Texture2D> _flyingEnemyFrames;
+        private List<Texture2D> _coinAnim;
+        private Animation _attackAnim;
+
 
         // ── Level state ───────────────────────────────────────────────────────────
 
@@ -118,22 +126,51 @@ namespace Light_Souls
 
         protected override void LoadContent()
         {
-            _spriteBatch  = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(GraphicsDevice, VirtualWidth, VirtualHeight);
 
             _pixel = CreateSolidTexture(1, 1, Color.White);
 
             LoadTextures();
+            _enemyFrames = LoadAnimationFrames("E", 20);
+            _chasingEnemyFrames = LoadAnimationFrames("ChasingE", 20);
+            _flyingEnemyFrames = LoadAnimationFrames("FlyingE", 20);
+            _coinAnim = LoadAnimationFrames("Soul", 20);
+            _attackAnim = BuildAnimation("Player/Attack", 1f / 10f, false, 3); 
+
 
             // Font is optional — if the asset is missing the game still runs
-            try   { _font = Content.Load<SpriteFont>("Font"); }
+            try { _font = Content.Load<SpriteFont>("Font"); }
             catch { _font = null; }
 
             LoadLevel(0);
             LoadPlayerAnimations();
-            _player.LoadAnimations(_idleAnim, _runAnim, _jumpAnim, _deadAnim);
+            _player.LoadAnimations(_idleAnim, _runAnim, _jumpAnim, _deadAnim, _attackAnim);
+            try
+            {
+                _backgroundMusic = Content.Load<Song>("Music/Castlevania (NES) Music - Stage 01 Vampire Killer");
+                // Toca em loop
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Volume = 0.5f;  
+                MediaPlayer.Play(_backgroundMusic);
+            }
+            catch
+            {
+                // Se falhar, o jogo continua sem música (silenciosamente)
+            }
         }
-
+        private List<Texture2D> LoadAnimationFrames(string folder, int maxFrames)
+        {
+            var frames = new List<Texture2D>();
+            for (int i = 0; i < maxFrames; i++)
+            {
+                try { frames.Add(Content.Load<Texture2D>($"{folder}/{i}")); }
+                catch { break; }
+            }
+            if (frames.Count == 0)
+                throw new Exception($"No animation frames found in '{folder}'.");
+            return frames;
+        }
         protected override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -156,6 +193,7 @@ namespace Light_Souls
             }
 
             UpdateGameplay(gameTime);
+            //PreventEnemyOverlap();
 
             base.Update(gameTime);
         }
@@ -201,17 +239,21 @@ namespace Light_Souls
             foreach (var ce in _level.ChasingEnemies)
             {
                 ce.SetWorldBounds(_level.WorldWidth, _level.WorldHeight);
-                ce.LoadAnimation(BuildAnimation("ChasingE", 1f / 8f, true));
+                ce.LoadAnimation(new Animation(_chasingEnemyFrames, 1f / 8f, true));
             }
 
             foreach (var fe in _level.FlyingEnemies)
             {
-                fe.LoadAnimation(BuildAnimation("FlyingE", 1f / 8f, true));
+                fe.LoadAnimation(new Animation(_flyingEnemyFrames, 1f / 8f, true));
             }
 
             foreach (var e in _level.Enemies)
             {
-                e.LoadAnimation(BuildAnimation("E", 1f / 8f, true));
+                e.LoadAnimation(new Animation(_enemyFrames, 1f / 8f, true));
+            }
+            foreach (var coin in _level.Coins)
+            {
+                coin.LoadAnimation(new Animation(_coinAnim, 1f / 8f, true));
             }
 
             _camera = new Camera(VirtualWidth, VirtualHeight,
@@ -251,22 +293,20 @@ namespace Light_Souls
         private void ReattachAnimations()
         {
             _idleAnim.Reset(); _runAnim.Reset();
-            _jumpAnim.Reset(); _deadAnim.Reset();
-            _player.LoadAnimations(_idleAnim, _runAnim, _jumpAnim, _deadAnim);
+            _jumpAnim.Reset(); _deadAnim.Reset(); _attackAnim.Reset();
+            _player.LoadAnimations(_idleAnim, _runAnim, _jumpAnim, _deadAnim, _attackAnim);
         }
 
-        private Animation BuildAnimation(string folder, float frameTime, bool looping)
+        private Animation BuildAnimation(string folder, float frameTime, bool looping, int maxFrames = 20)
         {
             var frames = new List<Texture2D>();
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < maxFrames; i++)
             {
-                try   { frames.Add(Content.Load<Texture2D>($"{folder}/{i}")); }
-                catch { continue; }
+                try { frames.Add(Content.Load<Texture2D>($"{folder}/{i}")); }
+                catch { break; }   // Sai do loop quando não encontrar mais frames
             }
-
             if (frames.Count == 0)
                 throw new Exception($"No animation frames found in '{folder}'.");
-
             return new Animation(frames, frameTime, looping);
         }
 
@@ -419,12 +459,17 @@ namespace Light_Souls
             foreach (var e  in _level.Enemies)        e.Update(gameTime, _level.Platforms);
             foreach (var fe in _level.FlyingEnemies)  fe.Update(gameTime, _level.Platforms);
             foreach (var ce in _level.ChasingEnemies) ce.Update(gameTime, _level.Platforms, _player);
+            // Update coins animation
+            foreach (var coin in _level.Coins)
+            {
+                coin.Update(gameTime);
+            }
 
             // Check enemy collisions (lethal enemies bypass iFrames; see CheckEnemyCollisions)
             if (!_player.IsDead)
                 CheckEnemyCollisions();
 
-            PreventEnemyOverlap();
+            //PreventEnemyOverlap();
 
             // Collect coins
             if (!_player.IsDead)
@@ -445,50 +490,84 @@ namespace Light_Souls
 
         private void PreventEnemyOverlap()
         {
-            for (int i = 0; i < _level.Enemies.Count; i++)
-            {
-                for (int j = i + 1; j < _level.Enemies.Count; j++)
-                {
-                    if (_level.Enemies[i].Bounds.Intersects(_level.Enemies[j].Bounds))
-                        ResolveOverlap(_level.Enemies[i], _level.Enemies[j]);
-                }
-                foreach (var ce in _level.ChasingEnemies)
-                {
-                    if (_level.Enemies[i].Bounds.Intersects(ce.Bounds))
-                        ResolveOverlap(_level.Enemies[i], ce);
-                }
-            }
+            // Lista com todos os inimigos que podem colidir entre si
+            var allGroundEnemies = new List<dynamic>();
+            allGroundEnemies.AddRange(_level.Enemies);
+            allGroundEnemies.AddRange(_level.ChasingEnemies);
 
-            for (int i = 0; i < _level.ChasingEnemies.Count; i++)
+            for (int i = 0; i < allGroundEnemies.Count; i++)
             {
-                for (int j = i + 1; j < _level.ChasingEnemies.Count; j++)
+                for (int j = i + 1; j < allGroundEnemies.Count; j++)
                 {
-                    if (_level.ChasingEnemies[i].Bounds.Intersects(_level.ChasingEnemies[j].Bounds))
-                        ResolveOverlap(_level.ChasingEnemies[i], _level.ChasingEnemies[j]);
+                    dynamic a = allGroundEnemies[i];
+                    dynamic b = allGroundEnemies[j];
+
+                    if (!a.Bounds.Intersects(b.Bounds)) continue;
+
+                    ResolveEnemyCollision(a, b);
                 }
             }
         }
 
-        private void ResolveOverlap(dynamic e1, dynamic e2)
+        private void ResolveEnemyCollision(dynamic a, dynamic b)
         {
-            if (System.Math.Abs((float)(e1.Position.Y - e2.Position.Y)) > 20f) return;
+            // 1. Calcula a interseção
+            Rectangle intersect = Rectangle.Intersect(a.Bounds, b.Bounds);
+            if (intersect.Width == 0 && intersect.Height == 0) return;
 
-            float center1 = e1.Position.X + e1.Bounds.Width / 2f;
-            float center2 = e2.Position.X + e2.Bounds.Width / 2f;
+            // 2. Decide eixo de resolução (menor penetração)
+            bool resolveX = intersect.Width < intersect.Height;
 
-            if (center1 < center2)
+            // Guarda as posições originais para cálculo do empurrão
+            Vector2 posA = a.Position;
+            Vector2 posB = b.Position;
+
+            if (resolveX)
             {
-                e1.Position.X -= 1f;
-                e2.Position.X += 1f;
+                // Separa no eixo X
+                float push = intersect.Width;
+                if (a.Bounds.Center.X < b.Bounds.Center.X)
+                {
+                    posA.X -= push;
+                    posB.X += push;
+                }
+                else
+                {
+                    posA.X += push;
+                    posB.X -= push;
+                }
+
+                // Troca velocidades horizontais
+                float tempVx = a.Velocity.X;
+                a.Velocity.X = b.Velocity.X;
+                b.Velocity.X = tempVx;
             }
             else
             {
-                e1.Position.X += 1f;
-                e2.Position.X -= 1f;
+                // Separa no eixo Y (apenas para evitar sobreposição vertical acidental)
+                float push = intersect.Height;
+                if (a.Bounds.Center.Y < b.Bounds.Center.Y)
+                {
+                    posA.Y -= push;
+                    posB.Y += push;
+                }
+                else
+                {
+                    posA.Y += push;
+                    posB.Y -= push;
+                }
+                // Em Y normalmente não trocamos velocidades (evita efeitos estranhos)
             }
 
-            try { e1.FlipDirection(); } catch { }
-            try { e2.FlipDirection(); } catch { }
+            // Aplica as novas posições
+            a.Position = posA;
+            b.Position = posB;
+
+            // Inverte a direção de ambos (evita que fiquem colados)
+            try { a.FlipDirection(); } catch { }
+            try { b.FlipDirection(); } catch { }
+
+
         }
 
         private void CheckEnemyCollisions()

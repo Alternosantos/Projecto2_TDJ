@@ -4,53 +4,67 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Background/Layer1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/ChasingE/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/ChasingE/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/ChasingE/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/ChasingE/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/4.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/5.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/E/6.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/FlyingE/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/FlyingE/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/FlyingE/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Font.spritefont</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt4.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt5.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt6.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt7.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/4.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Dead/5.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Idle/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Idle/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Idle/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Idle/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/4.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Jump/5.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/0.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/1.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/2.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/3.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/4.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/5.png</File>
-    <File>C:/Users/Paulo/Documents/GitHub/Projecto2_TDJ/Light Souls/Content/Player/Run/6.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Background/Layer1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/ChasingE/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/ChasingE/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/ChasingE/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/ChasingE/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/5.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/E/6.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/FlyingE/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/FlyingE/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/FlyingE/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Font.spritefont</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Music/Castlevania (NES) Music - Stage 01 Vampire Killer.mp3</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt5.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt6.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Platforms/grey_dirt7.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Attack/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Attack/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Attack/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Dead/5.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Idle/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Idle/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Idle/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Idle/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Jump/5.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/5.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Player/Run/6.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/0.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/1.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/2.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/3.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/4.png</File>
+    <File>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/6.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
@@ -96,5 +110,11 @@
     <File>Player/Run/4</File>
     <File>Player/Run/5</File>
     <File>Player/Run/6</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>

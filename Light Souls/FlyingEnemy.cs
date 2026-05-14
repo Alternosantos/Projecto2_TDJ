@@ -17,7 +17,7 @@ namespace Light_Souls
         private readonly float _leftBound;
         private readonly float _rightBound;
         private readonly float _originalY;
-        private readonly Vector2 _spawnPosition;   // ← guardado no construtor
+        private readonly Vector2 _spawnPosition;
         private Animation _flyAnimation;
 
         private int CurrentWidth => (int)((_flyAnimation != null ? _flyAnimation.Frames[0].Width : _texture.Width) * Scale);
@@ -39,9 +39,8 @@ namespace Light_Souls
             _originalY = startPosition.Y;
         }
 
-        // ── Reset ────────────────────────────────────────────────────────────────
+        public void LoadAnimation(Animation anim) => _flyAnimation = anim;
 
-        /// <summary>Volta à posição de spawn. Chamado quando o player morre.</summary>
         public void Reset()
         {
             Position = _spawnPosition;
@@ -52,77 +51,41 @@ namespace Light_Souls
             _flyAnimation?.Reset();
         }
 
-        // ── Update / helpers ─────────────────────────────────────────────────────
-
-        public void LoadAnimation(Animation anim)
-        {
-            _flyAnimation = anim;
-        }
-
         public void Update(GameTime gameTime, IReadOnlyList<Platform> platforms)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _flyAnimation?.Update(dt);
-
             Position += Velocity * dt;
 
             if (_returningToY)
             {
                 _returnTimer -= dt;
-                if (_returnTimer <= 0f)
-                {
-                    Position.Y = _originalY;
-                    Velocity.Y = 0f;
-                    _returningToY = false;
-                }
-                else
-                {
-                    Position.Y = MathHelper.Lerp(Position.Y, _originalY, 0.05f);
-                }
+                if (_returnTimer <= 0f) { Position.Y = _originalY; Velocity.Y = 0f; _returningToY = false; }
+                else Position.Y = MathHelper.Lerp(Position.Y, _originalY, 0.05f);
             }
 
             bool knockedBack = System.Math.Abs(Velocity.X) >= PatrolSpeed * 1.5f;
             if (!knockedBack && !_returningToY)
                 Position.X += _direction * PatrolSpeed * dt;
 
-            if (Position.X <= _leftBound)
-            {
-                Position.X = _leftBound;
-                _direction = 1;
-            }
-            else if (Position.X + CurrentWidth >= _rightBound)
-            {
-                Position.X = _rightBound - CurrentWidth;
-                _direction = -1;
-            }
+            if (Position.X <= _leftBound) { Position.X = _leftBound; _direction = 1; }
+            else if (Position.X + CurrentWidth >= _rightBound) { Position.X = _rightBound - CurrentWidth; _direction = -1; }
 
             Velocity *= DampingDecay;
         }
 
-        public void MarkToReturn(float delay = 2f)
-        {
-            _returningToY = true;
-            _returnTimer = delay;
-        }
-
-        public void FlipDirection()
-        {
-            _direction = -_direction;
-        }
-
-        public bool CollidesWith(Rectangle other)
-            => GetBounds().Intersects(other);
-
+        public void MarkToReturn(float delay = 2f) { _returningToY = true; _returnTimer = delay; }
+        public void FlipDirection() => _direction = -_direction;
+        public bool CollidesWith(Rectangle other) => GetBounds().Intersects(other);
         public Rectangle Bounds => GetBounds();
 
         public void Draw(SpriteBatch spriteBatch)
         {
             Texture2D tex = _flyAnimation?.GetCurrentFrame() ?? _texture;
             Color color = _flyAnimation != null ? Color.White : Color.Purple;
-            SpriteEffects effect = _direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            
-            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, effect, 0f);
+            SpriteEffects fx = _direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            spriteBatch.Draw(tex, Position, null, color, 0f, Vector2.Zero, Scale, fx, 0f);
         }
 
         private Rectangle GetBounds()

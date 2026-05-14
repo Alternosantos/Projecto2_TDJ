@@ -11,6 +11,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\Music\Castlevania %28NES%29 Music - Stage 01 Vampire Killer.mp3" />
     <None Remove="Content\Platforms\grey_dirt1.png" />
     <None Remove="Content\Platforms\grey_dirt2.png" />
     <None Remove="Content\Platforms\grey_dirt3.png" />
@@ -18,6 +19,9 @@
     <None Remove="Content\Platforms\grey_dirt5.png" />
     <None Remove="Content\Platforms\grey_dirt6.png" />
     <None Remove="Content\Platforms\grey_dirt7.png" />
+    <None Remove="Content\Player\Attack\0.png" />
+    <None Remove="Content\Player\Attack\1.png" />
+    <None Remove="Content\Player\Attack\2.png" />
     <None Remove="Content\Player\Dead.png" />
     <None Remove="Content\Player\Dead\0.png" />
     <None Remove="Content\Player\Dead\1.png" />
@@ -45,10 +49,28 @@
     <None Remove="Content\Player\Run\4.png" />
     <None Remove="Content\Player\Run\5.png" />
     <None Remove="Content\Player\Run\6.png" />
+    <None Remove="Content\Soul\0.png" />
+    <None Remove="Content\Soul\1.png" />
+    <None Remove="Content\Soul\2.png" />
+    <None Remove="Content\Soul\3.png" />
+    <None Remove="Content\Soul\4.png" />
+    <None Remove="Content\Soul\5.png" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Music\Castlevania (NES) Music - Stage 01 Vampire Killer.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Attack\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Attack\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Player\Attack\2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Player\Dead\0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -136,6 +158,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Player\Run\6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Soul\0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Soul\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Soul\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Soul\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Soul\4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

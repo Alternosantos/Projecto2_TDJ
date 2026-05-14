@@ -34,117 +34,6 @@ C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\ref\Light Souls.dll
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer0.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer0.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt2.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt4.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt5.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt6.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt7.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level1.txt
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level2.txt
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level3.txt
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level4.txt
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.exe
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.deps.json
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.runtimeconfig.json
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.pdb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\MonoGame.Framework.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\NVorbis.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm64\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x64\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x86\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\ios-arm64\native\libopenal.a
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-arm64\native\libopenal.a
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-x64\native\libopenal.a
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-arm64\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libopenal.so
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libopenal.dylib
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\openal.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libSDL2-2.0.so.0
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libSDL2-2.0.0.dylib
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\SDL2.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\mgcb.tool.restore
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.AssemblyReference.cache
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfoInputs.cache
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfo.cs
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.CoreCompileInputs.cache
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.sourcelink.json
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light So.999DFBD3.Up2Date
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\refint\Light Souls.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.pdb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.genruntimeconfig.cache
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\ref\Light Souls.dll
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt2.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt3.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt4.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt5.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt6.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt7.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt2.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt4.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt5.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt6.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt7.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\0.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\3.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\4.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\5.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\0.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\2.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\3.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\0.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\2.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\3.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\4.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\5.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\0.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\1.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\2.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\3.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\4.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\5.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.png
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\0.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\4.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\5.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\6.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\0.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\2.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\0.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\2.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\4.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\5.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\0.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\1.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\2.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\3.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\4.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\5.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\0.png
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\1.png
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\3.png
@@ -222,8 +111,6 @@ C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Conte
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.xnb
 C:\Users\paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
-C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\0.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\1.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\2.xnb
@@ -237,3 +124,150 @@ C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Conte
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\4.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\5.xnb
 C:\Users\Paulo\Documents\GitHub\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\4.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\5.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\4.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\5.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt4.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt5.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt6.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt7.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\4.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\5.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\ChasingE\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\E\6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\FlyingE\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Font.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Plataforms\grey_dirt7.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Platforms\grey_dirt7.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Dead\6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Idle\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Jump\5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Run\6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Background\Layer1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level1.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level2.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level3.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level4.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.exe
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.deps.json
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.runtimeconfig.json
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Light Souls.pdb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\MonoGame.Framework.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\NVorbis.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-arm64\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x64\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\android-x86\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\ios-arm64\native\libopenal.a
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-arm64\native\libopenal.a
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\iossimulator-x64\native\libopenal.a
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-arm64\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libopenal.so
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libopenal.dylib
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\openal.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\linux-x64\native\libSDL2-2.0.so.0
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\osx\native\libSDL2-2.0.0.dylib
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\runtimes\win-x64\native\SDL2.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\mgcb.tool.restore
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.AssemblyReference.cache
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfoInputs.cache
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.AssemblyInfo.cs
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.sourcelink.json
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light So.999DFBD3.Up2Date
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\refint\Light Souls.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.pdb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\Light Souls.genruntimeconfig.cache
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\obj\Debug\net8.0\ref\Light Souls.dll
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Music\Castlevania (NES) Music - Stage 01 Vampire Killer.mp3
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Music\Castlevania (NES) Music - Stage 01 Vampire Killer.ogg
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Music\Castlevania (NES) Music - Stage 01 Vampire Killer.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\3.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\4.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\3.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\4.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\5.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Soul\6.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\0.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\1.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\0.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\1.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\2.xnb
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\2.png

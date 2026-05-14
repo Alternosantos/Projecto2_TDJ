@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Music/Castlevania (NES) Music - Stage 01 Vampire Killer.mp3</SourceFile>
+  <SourceTime>2026-05-14T13:05:09.4581159+01:00</SourceTime>
+  <DestFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Music/Castlevania (NES) Music - Stage 01 Vampire Killer.xnb</DestFile>
+  <DestTime>2026-05-14T13:14:00.0320311+01:00</DestTime>
+  <Importer>Mp3Importer</Importer>
+  <ImporterTime>2025-06-02T11:31:02+01:00</ImporterTime>
+  <Processor>SongProcessor</Processor>
+  <ProcessorTime>2025-06-02T11:31:02+01:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput>
+    <string>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Music/Castlevania (NES) Music - Stage 01 Vampire Killer.ogg</string>
+  </BuildOutput>
+</PipelineBuildEvent>
