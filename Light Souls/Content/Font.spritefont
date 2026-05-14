@@ -11,6 +11,18 @@
         <Start>&#32;</Start>
         <End>&#126;</End>
       </CharacterRegion>
+		<!-- adicionar as setas -->
+		<CharacterRegion>
+			<Start>&#8593;</Start>
+			<!-- ↑ -->
+			<End>&#8595;</End>
+			<!-- ↓ -->
+		</CharacterRegion>
+		<!-- Arrow characters: ← ↑ → ↓ -->
+		<CharacterRegion>
+			<Start>&#8592;</Start>
+			<End>&#8595;</End>
+		</CharacterRegion>
       <!-- Portuguese accented chars -->
       <CharacterRegion>
         <Start>&#192;</Start>

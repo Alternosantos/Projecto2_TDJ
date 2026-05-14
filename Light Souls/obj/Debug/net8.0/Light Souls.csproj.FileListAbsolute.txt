@@ -271,3 +271,5 @@ C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\1.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\2.xnb
 C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Player\Attack\2.png
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level5.txt
+C:\Users\user\Desktop\Projecto2_TDJ\Light Souls\bin\Debug\net8.0\Content\Levels\Level6.txt

@@ -10,7 +10,7 @@ namespace Light_Souls
         private const float Gravity = 1200f;
         private const float DampingDecay = 0.95f;
         private const float Scale = 0.5f;
-        private const float EdgeCheckCooldown = 0.3f;
+        private const float EdgeCheckCooldown = 0.1f;   // reduzido de 0.3 para 0.1
 
         public Vector2 Position;
         public Vector2 Velocity;
@@ -21,7 +21,7 @@ namespace Light_Souls
 
         private Vector2 _settledSpawnPosition;
         private bool _hasSettled = false;
-        private float _edgeCheckTimer;           
+        private float _edgeCheckTimer;
 
         private int CurrentWidth => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Width : _texture.Width) * Scale);
         private int CurrentHeight => (int)((_walkAnimation != null ? _walkAnimation.Frames[0].Height : _texture.Height) * Scale);
@@ -58,20 +58,28 @@ namespace Light_Souls
             if (_walkAnimation != null && System.Math.Abs(Velocity.X) > 1f)
                 _walkAnimation.Update(dt);
 
-            Position += Velocity * dt;
+            // Horizontal — só se mover depois de ter aterrado pela primeira vez
+            if (_hasSettled)
+            {
+                Velocity.X = _direction * WalkSpeed;
+                Position.X += Velocity.X * dt;
+                ResolveHorizontalCollisions(platforms);
+            }
+            else
+            {
+                Velocity.X = 0f;
+            }
 
-            Velocity.X = _direction * WalkSpeed;
-            Position.X += Velocity.X * dt;
-            ResolveHorizontalCollisions(platforms);
-
+            // Vertical
             Velocity.Y += Gravity * dt;
             Position.Y += Velocity.Y * dt;
             ResolveVerticalCollisions(platforms);
 
+            // Edge check com cooldown curto + reset ao virar
             if (_edgeCheckTimer <= 0f)
                 CheckEdgeTurnaround(platforms);
 
-            Velocity *= DampingDecay;
+            Velocity.Y *= DampingDecay;   // damping só no Y — X é controlado por _direction
 
             if (Position.Y > 800f) { Position.Y = 800f; Velocity.Y = 0f; }
         }
@@ -101,6 +109,7 @@ namespace Light_Souls
                 else if (Velocity.X < 0f) Position.X = platform.Bounds.Right;
                 _direction = -_direction;
                 Velocity.X = 0f;
+                _edgeCheckTimer = EdgeCheckCooldown;   // evita virar logo a seguir
                 break;
             }
         }
@@ -132,9 +141,9 @@ namespace Light_Souls
             int probeY = (int)(Position.Y + CurrentHeight + 1);
             foreach (var platform in platforms)
                 if (platform.Bounds.Contains(probeX, probeY)) return;
+
             _direction = -_direction;
+            _edgeCheckTimer = EdgeCheckCooldown;   // ← reset ao virar (bug anterior não fazia isto)
         }
-
-
     }
 }

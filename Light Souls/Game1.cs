@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 namespace Light_Souls
 {
+    internal enum GameState { MainMenu, Controls, Playing }
+
     /// <summary>
     /// Main game class. Owns the game loop, level loading, rendering pipeline,
     /// and all overlay state (YOU DIED, level-complete, fullscreen button).
@@ -17,13 +19,13 @@ namespace Light_Souls
         // All gameplay logic and rendering targets this fixed resolution.
         // The result is letterbox-scaled to the real window in a second pass.
 
-        private const int VirtualWidth  = 800;
+        private const int VirtualWidth = 800;
         private const int VirtualHeight = 480;
 
         // ── Overlay timing ───────────────────────────────────────────────────────
 
-        private const float YouDiedDuration       = 3.0f;
-        private const float YouDiedFadeDuration   = 0.4f;
+        private const float YouDiedDuration = 3.0f;
+        private const float YouDiedFadeDuration = 0.4f;
         private const float LevelCompleteDuration = 1.5f;
 
         // ── Level list ───────────────────────────────────────────────────────────
@@ -32,22 +34,24 @@ namespace Light_Souls
         {
             "Content/Levels/Level1.txt",
             "Content/Levels/Level2.txt",
-            "Content/Levels/Level3.txt",
+            //"Content/Levels/Level3.txt",
             "Content/Levels/Level4.txt",
+            "Content/Levels/Level5.txt",
+            "Content/Levels/Level6.txt",
         };
 
         // ── Core infrastructure ───────────────────────────────────────────────────
 
         private readonly GraphicsDeviceManager _graphics;
-        private SpriteBatch    _spriteBatch;
+        private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;   // offscreen buffer at VirtualWidth × VirtualHeight
-        private Texture2D      _pixel;          // 1×1 white texture for filled rectangles
+        private Texture2D _pixel;          // 1×1 white texture for filled rectangles
         private Song _backgroundMusic;
 
         // ── World objects ─────────────────────────────────────────────────────────
 
         private Player _player;
-        private Level  _level;
+        private Level _level;
         private Camera _camera;
         private Enemy _enemies;
         private ChasingEnemy _chasingEnemies;
@@ -55,12 +59,12 @@ namespace Light_Souls
 
         // ── Asset references ──────────────────────────────────────────────────────
 
-        private Texture2D   _backgroundTexture;
+        private Texture2D _backgroundTexture;
         private Texture2D[] _platformTextures;
-        private Texture2D   _playerTexture;
-        private Texture2D   _enemyTexture;
-        private Texture2D   _coinTexture;
-        private SpriteFont  _font;             // null-safe — UI degrades gracefully without it
+        private Texture2D _playerTexture;
+        private Texture2D _enemyTexture;
+        private Texture2D _coinTexture;
+        private SpriteFont _font;             // null-safe — UI degrades gracefully without it
 
         // ── Reusable animations (re-attached on every level load) ─────────────────
 
@@ -77,14 +81,14 @@ namespace Light_Souls
 
         // ── Level state ───────────────────────────────────────────────────────────
 
-        private int  _currentLevelIndex;
+        private int _currentLevelIndex;
         private bool _levelTransitionPending;
         private bool _showLevelComplete;
         private float _levelCompleteTimer;
 
         // ── YOU DIED overlay ──────────────────────────────────────────────────────
 
-        private bool  _showYouDied;
+        private bool _showYouDied;
         private float _youDiedTimer;
         private float _youDiedAlpha;
 
@@ -97,10 +101,18 @@ namespace Light_Souls
         private static readonly Rectangle FullscreenButtonRect
             = new Rectangle(VirtualWidth - 44, 8, 36, 24);
 
+        // ── Menu state ────────────────────────────────────────────────────────────
+
+        private GameState _gameState = GameState.MainMenu;
+        private int _menuSelectedIndex;
+        private float _menuPulseTimer;
+
+        private static readonly string[] MenuItems = { "JOGAR", "CONTROLOS", "SAIR" };
+
         // ── Input (previous-frame snapshots for edge detection) ───────────────────
 
         private KeyboardState _prevKeyboard;
-        private MouseState    _prevMouse;
+        private MouseState _prevMouse;
 
         // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -108,12 +120,12 @@ namespace Light_Souls
         {
             _graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth  = VirtualWidth,
+                PreferredBackBufferWidth = VirtualWidth,
                 PreferredBackBufferHeight = VirtualHeight,
             };
 
             Content.RootDirectory = "Content";
-            IsMouseVisible        = true;
+            IsMouseVisible = true;
             _graphics.ApplyChanges();
         }
 
@@ -136,7 +148,7 @@ namespace Light_Souls
             _chasingEnemyFrames = LoadAnimationFrames("ChasingE", 20);
             _flyingEnemyFrames = LoadAnimationFrames("FlyingE", 20);
             _coinAnim = LoadAnimationFrames("Soul", 20);
-            _attackAnim = BuildAnimation("Player/Attack", 1f / 10f, false, 3); 
+            _attackAnim = BuildAnimation("Player/Attack", 1f / 10f, false, 3);
 
 
             // Font is optional — if the asset is missing the game still runs
@@ -151,7 +163,7 @@ namespace Light_Souls
                 _backgroundMusic = Content.Load<Song>("Music/Castlevania (NES) Music - Stage 01 Vampire Killer");
                 // Toca em loop
                 MediaPlayer.IsRepeating = true;
-                MediaPlayer.Volume = 0.5f;  
+                MediaPlayer.Volume = 0.5f;
                 MediaPlayer.Play(_backgroundMusic);
             }
             catch
@@ -174,14 +186,21 @@ namespace Light_Souls
         protected override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var   kb = Keyboard.GetState();
-            var   ms = Mouse.GetState();
+            var kb = Keyboard.GetState();
+            var ms = Mouse.GetState();
 
-            HandleSystemInput(kb, ms);
+            HandleSystemInput(kb, ms);          
 
-            _prevKeyboard = kb;
-            _prevMouse    = ms;
+            if (_gameState == GameState.MainMenu || _gameState == GameState.Controls)
+            {
+                UpdateMenu(dt, kb);
+                _prevKeyboard = kb;   
+                _prevMouse = ms;
+                base.Update(gameTime);
+                return;
+            }
 
+            // ── Playing ──────────────────────────────────────────────────────────
             UpdateYouDiedOverlay(dt);
 
             // Pause gameplay during the level-complete flash
@@ -193,7 +212,8 @@ namespace Light_Souls
             }
 
             UpdateGameplay(gameTime);
-            //PreventEnemyOverlap();
+            _prevKeyboard = kb;   
+            _prevMouse = ms;
 
             base.Update(gameTime);
         }
@@ -204,15 +224,22 @@ namespace Light_Souls
             GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            DrawBackground();
-            DrawWorld();
-            DrawHud();
+            if (_gameState == GameState.MainMenu || _gameState == GameState.Controls)
+            {
+                DrawMenu();
+            }
+            else
+            {
+                DrawBackground();
+                DrawWorld();
+                DrawHud();
 
-            if (_showYouDied && _youDiedAlpha > 0.01f)
-                DrawYouDiedOverlay();
+                if (_showYouDied && _youDiedAlpha > 0.01f)
+                    DrawYouDiedOverlay();
 
-            if (_showLevelComplete)
-                DrawLevelCompleteOverlay();
+                if (_showLevelComplete)
+                    DrawLevelCompleteOverlay();
+            }
 
             // Pass 2 — scale the virtual target to fill the real window
             GraphicsDevice.SetRenderTarget(null);
@@ -284,8 +311,8 @@ namespace Light_Souls
 
         private void LoadPlayerAnimations()
         {
-            _idleAnim = BuildAnimation("Player/Idle", 1f / 7f,  looping: true);
-            _runAnim  = BuildAnimation("Player/Run",  1f / 11f, looping: true);
+            _idleAnim = BuildAnimation("Player/Idle", 1f / 7f, looping: true);
+            _runAnim = BuildAnimation("Player/Run", 1f / 11f, looping: true);
             _jumpAnim = BuildAnimation("Player/Jump", 1f / 10f, looping: false);
             _deadAnim = BuildAnimation("Player/Dead", 1f / 10f, looping: false);
         }
@@ -316,8 +343,8 @@ namespace Light_Souls
         {
             // Solid-colour placeholders (overridden by the sprite animations at runtime)
             _playerTexture = CreateSolidTexture(32, 32, Color.White);
-            _enemyTexture  = CreateSolidTexture(32, 32, Color.Red);
-            _coinTexture   = CreateSolidTexture(24, 24, Color.Yellow);
+            _enemyTexture = CreateSolidTexture(32, 32, Color.Red);
+            _coinTexture = CreateSolidTexture(24, 24, Color.Yellow);
 
             _platformTextures = new Texture2D[7];
             for (int i = 0; i < _platformTextures.Length; i++)
@@ -329,7 +356,7 @@ namespace Light_Souls
         private Texture2D CreateSolidTexture(int width, int height, Color color)
         {
             var texture = new Texture2D(GraphicsDevice, width, height);
-            var data    = new Color[width * height];
+            var data = new Color[width * height];
             for (int i = 0; i < data.Length; i++) data[i] = color;
             texture.SetData(data);
             return texture;
@@ -345,12 +372,12 @@ namespace Light_Souls
             if (_isFullscreen)
             {
                 var dm = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-                _graphics.PreferredBackBufferWidth  = dm.Width;
+                _graphics.PreferredBackBufferWidth = dm.Width;
                 _graphics.PreferredBackBufferHeight = dm.Height;
             }
             else
             {
-                _graphics.PreferredBackBufferWidth  = VirtualWidth;
+                _graphics.PreferredBackBufferWidth = VirtualWidth;
                 _graphics.PreferredBackBufferHeight = VirtualHeight;
             }
 
@@ -364,10 +391,10 @@ namespace Light_Souls
         /// </summary>
         private Matrix GetScaleMatrix()
         {
-            float scaleX  = (float)GraphicsDevice.Viewport.Width  / VirtualWidth;
-            float scaleY  = (float)GraphicsDevice.Viewport.Height / VirtualHeight;
-            float scale   = Math.Min(scaleX, scaleY);
-            float offsetX = (GraphicsDevice.Viewport.Width  - VirtualWidth  * scale) / 2f;
+            float scaleX = (float)GraphicsDevice.Viewport.Width / VirtualWidth;
+            float scaleY = (float)GraphicsDevice.Viewport.Height / VirtualHeight;
+            float scale = Math.Min(scaleX, scaleY);
+            float offsetX = (GraphicsDevice.Viewport.Width - VirtualWidth * scale) / 2f;
             float offsetY = (GraphicsDevice.Viewport.Height - VirtualHeight * scale) / 2f;
 
             return Matrix.CreateScale(scale, scale, 1f)
@@ -379,10 +406,10 @@ namespace Light_Souls
         /// </summary>
         private Vector2 ToVirtual(Point screenPoint)
         {
-            float scaleX  = (float)GraphicsDevice.Viewport.Width  / VirtualWidth;
-            float scaleY  = (float)GraphicsDevice.Viewport.Height / VirtualHeight;
-            float scale   = Math.Min(scaleX, scaleY);
-            float offsetX = (GraphicsDevice.Viewport.Width  - VirtualWidth  * scale) / 2f;
+            float scaleX = (float)GraphicsDevice.Viewport.Width / VirtualWidth;
+            float scaleY = (float)GraphicsDevice.Viewport.Height / VirtualHeight;
+            float scale = Math.Min(scaleX, scaleY);
+            float offsetX = (GraphicsDevice.Viewport.Width - VirtualWidth * scale) / 2f;
             float offsetY = (GraphicsDevice.Viewport.Height - VirtualHeight * scale) / 2f;
 
             return new Vector2(
@@ -394,17 +421,24 @@ namespace Light_Souls
 
         private void HandleSystemInput(KeyboardState kb, MouseState ms)
         {
-            // Quit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                || kb.IsKeyDown(Keys.Escape))
-                Exit();
+            bool escPressed = kb.IsKeyDown(Keys.Escape) && !_prevKeyboard.IsKeyDown(Keys.Escape);
+
+            if (escPressed)
+            {
+                if (_gameState == GameState.Controls)
+                    _gameState = GameState.MainMenu;
+                else if (_gameState == GameState.Playing)
+                    _gameState = GameState.MainMenu;
+                else
+                    Exit();
+            }
 
             // Fullscreen — keyboard shortcut
             if (kb.IsKeyDown(Keys.F) && !_prevKeyboard.IsKeyDown(Keys.F))
                 ToggleFullscreen();
 
             // Fullscreen — on-screen button (detect click release)
-            if (ms.LeftButton  == ButtonState.Released &&
+            if (ms.LeftButton == ButtonState.Released &&
                 _prevMouse.LeftButton == ButtonState.Pressed)
             {
                 Vector2 vm = ToVirtual(ms.Position);
@@ -420,7 +454,7 @@ namespace Light_Souls
             _youDiedTimer -= dt;
 
             // Fade in → hold → fade out
-            float holdEnd   = YouDiedDuration - YouDiedFadeDuration;
+            float holdEnd = YouDiedDuration - YouDiedFadeDuration;
             if (_youDiedTimer > holdEnd)
                 _youDiedAlpha = 1f - (_youDiedTimer - holdEnd) / YouDiedFadeDuration;
             else if (_youDiedTimer < YouDiedFadeDuration)
@@ -456,8 +490,8 @@ namespace Light_Souls
             _player.Update(gameTime, _level.Platforms,
                            _level.Enemies, _level.FlyingEnemies, _level.ChasingEnemies);
 
-            foreach (var e  in _level.Enemies)        e.Update(gameTime, _level.Platforms);
-            foreach (var fe in _level.FlyingEnemies)  fe.Update(gameTime, _level.Platforms);
+            foreach (var e in _level.Enemies) e.Update(gameTime, _level.Platforms);
+            foreach (var fe in _level.FlyingEnemies) fe.Update(gameTime, _level.Platforms);
             foreach (var ce in _level.ChasingEnemies) ce.Update(gameTime, _level.Platforms, _player);
             // Update coins animation
             foreach (var coin in _level.Coins)
@@ -478,7 +512,7 @@ namespace Light_Souls
             // Trigger YOU DIED if player just died this frame
             if (!wasDeadBefore && _player.IsDead && !_showYouDied)
                 TriggerYouDied();
-                
+
 
             // Trigger level complete when all coins are collected
             bool hasCoins = _level.Coins.Count > 0;
@@ -596,17 +630,204 @@ namespace Light_Souls
 
         }
 
+        // ── Menu logic ────────────────────────────────────────────────────────────
+
+        private void UpdateMenu(float dt, KeyboardState kb)
+        {
+            _menuPulseTimer += dt;
+
+            if (_gameState == GameState.Controls) return; // just wait for Escape
+
+            // Navigate
+            if (kb.IsKeyDown(Keys.Up) && !_prevKeyboard.IsKeyDown(Keys.Up))
+                _menuSelectedIndex = (_menuSelectedIndex - 1 + MenuItems.Length) % MenuItems.Length;
+            if (kb.IsKeyDown(Keys.Down) && !_prevKeyboard.IsKeyDown(Keys.Down))
+                _menuSelectedIndex = (_menuSelectedIndex + 1) % MenuItems.Length;
+
+            // Confirm
+            if (kb.IsKeyDown(Keys.Enter) && !_prevKeyboard.IsKeyDown(Keys.Enter))
+                ConfirmMenuSelection();
+        }
+
+        private void ConfirmMenuSelection()
+        {
+            switch (_menuSelectedIndex)
+            {
+                case 0: // JOGAR
+                    LoadLevel(0);
+                    ReattachAnimations();
+                    _gameState = GameState.Playing;
+                    break;
+                case 1: // CONTROLOS
+                    _gameState = GameState.Controls;
+                    break;
+                case 2: // SAIR
+                    Exit();
+                    break;
+            }
+        }
+
+        private void DrawMenu()
+        {
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
+            // Dark background gradient (two overlapping rects)
+            FillRect(new Rectangle(0, 0, VirtualWidth, VirtualHeight),
+                     new Color((byte)10, (byte)5, (byte)20));
+            FillRect(new Rectangle(0, VirtualHeight / 2, VirtualWidth, VirtualHeight / 2),
+                     new Color((byte)0, (byte)0, (byte)0, (byte)80));
+
+            if (_gameState == GameState.Controls)
+            {
+                DrawControlsScreen();
+                _spriteBatch.End();
+                return;
+            }
+
+            // ── Title ─────────────────────────────────────────────────────────────
+            if (_font != null)
+            {
+                const string Title = "LIGHT SOULS";
+                Vector2 tSize = _font.MeasureString(Title);
+                float tScale = Math.Min(VirtualWidth / tSize.X * 0.55f, 4f);
+                Vector2 tPos = new Vector2(VirtualWidth / 2f, VirtualHeight * 0.22f);
+
+                // Blood-red glow / shadow
+                _spriteBatch.DrawString(_font, Title,
+                    tPos + new Vector2(3f * tScale, 3f * tScale),
+                    new Color((byte)100, (byte)0, (byte)0, (byte)200),
+                    0f, tSize / 2f, tScale, SpriteEffects.None, 0f);
+                // Main title
+                _spriteBatch.DrawString(_font, Title, tPos,
+                    new Color((byte)200, (byte)20, (byte)20),
+                    0f, tSize / 2f, tScale, SpriteEffects.None, 0f);
+
+                // ── Menu items ────────────────────────────────────────────────────
+                float startY = VirtualHeight * 0.52f;
+                float spacing = 42f;
+
+                for (int i = 0; i < MenuItems.Length; i++)
+                {
+                    bool selected = i == _menuSelectedIndex;
+                    float pulse = selected ? (0.85f + 0.15f * (float)Math.Sin(_menuPulseTimer * 5f)) : 1f;
+                    float iScale = (selected ? 1.4f : 1.0f) * pulse;
+                    Color iColor = selected
+                        ? new Color((byte)255, (byte)215, (byte)0)   // gold
+                        : new Color((byte)160, (byte)140, (byte)160); // dim
+
+                    Vector2 iSize = _font.MeasureString(MenuItems[i]);
+                    Vector2 iPos = new Vector2(VirtualWidth / 2f, startY + i * spacing);
+
+                    if (selected)
+                    {
+                        // Shadow for selected item
+                        _spriteBatch.DrawString(_font, MenuItems[i],
+                            iPos + new Vector2(2f, 2f),
+                            new Color((byte)0, (byte)0, (byte)0, (byte)180),
+                            0f, iSize / 2f, iScale, SpriteEffects.None, 0f);
+
+                        // Arrow indicator
+                        _spriteBatch.DrawString(_font, ">",
+                            new Vector2(iPos.X - iSize.X * iScale * 0.5f - 18f, iPos.Y),
+                            new Color((byte)255, (byte)215, (byte)0),
+                            0f, _font.MeasureString(">") / 2f, iScale * 0.9f, SpriteEffects.None, 0f);
+                    }
+
+                    _spriteBatch.DrawString(_font, MenuItems[i], iPos,
+                        iColor, 0f, iSize / 2f, iScale, SpriteEffects.None, 0f);
+                }
+
+                // ── Footer hint ───────────────────────────────────────────────────
+                const string Hint = "↑↓ Navegar   Enter Confirmar   Esc Sair";
+                Vector2 hSize = _font.MeasureString(Hint);
+                _spriteBatch.DrawString(_font, Hint,
+                    new Vector2((VirtualWidth - hSize.X * 0.55f) / 2f, VirtualHeight - 22f),
+                    new Color((byte)100, (byte)90, (byte)110),
+                    0f, Vector2.Zero, 0.55f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                // Fallback without font: coloured bars for each option
+                for (int i = 0; i < MenuItems.Length; i++)
+                {
+                    Color c = i == _menuSelectedIndex
+                        ? new Color((byte)180, (byte)140, (byte)0)
+                        : new Color((byte)60, (byte)50, (byte)70);
+                    FillRect(new Rectangle(VirtualWidth / 2 - 80, 200 + i * 50, 160, 36), c);
+                }
+            }
+
+            _spriteBatch.End();
+        }
+
+        private void DrawControlsScreen()
+        {
+            // Called from inside an active SpriteBatch.Begin block
+            if (_font == null) return;
+
+            const string Title = "CONTROLOS";
+            Vector2 tSize = _font.MeasureString(Title);
+            float tScale = 1.8f;
+            Vector2 tPos = new Vector2(VirtualWidth / 2f, 60f);
+
+            _spriteBatch.DrawString(_font, Title,
+                tPos + new Vector2(2f, 2f),
+                new Color((byte)0, (byte)0, (byte)0, (byte)180),
+                0f, tSize / 2f, tScale, SpriteEffects.None, 0f);
+            _spriteBatch.DrawString(_font, Title, tPos,
+                new Color((byte)200, (byte)20, (byte)20),
+                0f, tSize / 2f, tScale, SpriteEffects.None, 0f);
+
+            var lines = new[]
+            {
+                ("A / ←",        "Mover para a esquerda"),
+                ("D / →",        "Mover para a direita"),
+                ("Espaço / ↑",   "Saltar (duplo salto)"),
+                ("E",            "Ataque / Stomp"),
+                ("F",            "Fullscreen"),
+                ("Esc",          "Menu principal"),
+            };
+
+            float y = 145f;
+            float scale = 0.85f;
+            Color keyC = new Color((byte)255, (byte)215, (byte)0);
+            Color valC = new Color((byte)200, (byte)185, (byte)200);
+
+            foreach (var (key, desc) in lines)
+            {
+                Vector2 kSize = _font.MeasureString(key);
+                Vector2 dSize = _font.MeasureString(desc);
+
+                _spriteBatch.DrawString(_font, key,
+                    new Vector2(VirtualWidth / 2f - 10f - kSize.X * scale, y),
+                    keyC, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+                _spriteBatch.DrawString(_font, desc,
+                    new Vector2(VirtualWidth / 2f + 10f, y),
+                    valC, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+                y += 40f;
+            }
+
+            const string Back = "Pressiona Esc para voltar";
+            Vector2 bSize = _font.MeasureString(Back);
+            _spriteBatch.DrawString(_font, Back,
+                new Vector2((VirtualWidth - bSize.X * 0.6f) / 2f, VirtualHeight - 28f),
+                new Color((byte)100, (byte)90, (byte)110),
+                0f, Vector2.Zero, 0.6f, SpriteEffects.None, 0f);
+        }
+
         private void TriggerYouDied()
         {
-            _showYouDied  = true;
+            _showYouDied = true;
             _youDiedTimer = YouDiedDuration;
             _youDiedAlpha = 0f;
         }
 
         private void TriggerLevelComplete()
         {
-            _showLevelComplete      = true;
-            _levelCompleteTimer     = LevelCompleteDuration;
+            _showLevelComplete = true;
+            _levelCompleteTimer = LevelCompleteDuration;
             _levelTransitionPending = true;
         }
 
@@ -614,13 +835,13 @@ namespace Light_Souls
 
         private void DrawBackground()
         {
-            float texW      = _backgroundTexture.Width;
-            float scaledW   = VirtualWidth;
-            float scaledH   = _backgroundTexture.Height * (scaledW / texW);
-            float yOffset   = (VirtualHeight - scaledH) / 2f;
+            float texW = _backgroundTexture.Width;
+            float scaledW = VirtualWidth;
+            float scaledH = _backgroundTexture.Height * (scaledW / texW);
+            float yOffset = (VirtualHeight - scaledH) / 2f;
             float parallaxX = _camera.Position.X * 0.5f;
-            int   startTile = (int)Math.Floor(parallaxX / scaledW);
-            float startX    = startTile * scaledW - parallaxX;
+            int startTile = (int)Math.Floor(parallaxX / scaledW);
+            float startX = startTile * scaledW - parallaxX;
 
             _spriteBatch.Begin(samplerState: SamplerState.LinearWrap);
             for (float x = startX; x < startX + VirtualWidth + scaledW; x += scaledW)
@@ -639,10 +860,10 @@ namespace Light_Souls
 
             _level.Draw(_spriteBatch);
 
-            foreach (var e  in _level.Enemies)        e.Draw(_spriteBatch);
-            foreach (var fe in _level.FlyingEnemies)  fe.Draw(_spriteBatch);
+            foreach (var e in _level.Enemies) e.Draw(_spriteBatch);
+            foreach (var fe in _level.FlyingEnemies) fe.Draw(_spriteBatch);
             foreach (var ce in _level.ChasingEnemies) ce.Draw(_spriteBatch);
-            foreach (var c  in _level.Coins)           c.Draw(_spriteBatch);
+            foreach (var c in _level.Coins) c.Draw(_spriteBatch);
 
             _player.Draw(_spriteBatch);
 
@@ -682,11 +903,11 @@ namespace Light_Souls
 
             if (_font != null)
             {
-                const string Text  = "YOU DIED";
-                Vector2 size       = _font.MeasureString(Text);
-                float   scale      = Math.Min(VirtualWidth / size.X * 0.55f, 5f);
-                Vector2 origin     = size / 2f;
-                Vector2 centre     = new Vector2(VirtualWidth / 2f, VirtualHeight / 2f);
+                const string Text = "YOU DIED";
+                Vector2 size = _font.MeasureString(Text);
+                float scale = Math.Min(VirtualWidth / size.X * 0.55f, 5f);
+                Vector2 origin = size / 2f;
+                Vector2 centre = new Vector2(VirtualWidth / 2f, VirtualHeight / 2f);
 
                 // Drop shadow
                 _spriteBatch.DrawString(_font, Text,
@@ -711,8 +932,8 @@ namespace Light_Souls
 
         private void DrawLevelCompleteOverlay()
         {
-            float t     = MathHelper.Clamp(_levelCompleteTimer / LevelCompleteDuration, 0f, 1f);
-            byte  alpha = (byte)(220 * t);
+            float t = MathHelper.Clamp(_levelCompleteTimer / LevelCompleteDuration, 0f, 1f);
+            byte alpha = (byte)(220 * t);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
@@ -721,11 +942,11 @@ namespace Light_Souls
 
             if (_font != null)
             {
-                const string Text  = "NIVEL COMPLETO!";
-                Vector2 size       = _font.MeasureString(Text);
-                float   scale      = Math.Min(VirtualWidth / size.X * 0.5f, 3.5f);
-                Vector2 origin     = size / 2f;
-                Vector2 centre     = new Vector2(VirtualWidth / 2f, VirtualHeight / 2f);
+                const string Text = "LEVEL COMPLETED!";
+                Vector2 size = _font.MeasureString(Text);
+                float scale = Math.Min(VirtualWidth / size.X * 0.5f, 3.5f);
+                Vector2 origin = size / 2f;
+                Vector2 centre = new Vector2(VirtualWidth / 2f, VirtualHeight / 2f);
 
                 _spriteBatch.DrawString(_font, Text,
                     centre + new Vector2(2f * scale, 2f * scale),
@@ -756,25 +977,25 @@ namespace Light_Souls
             FillRect(r, new Color((byte)60, (byte)60, (byte)90, (byte)210));
 
             // Icon: arrows indicating expand or shrink
-            int   cx = r.X + r.Width  / 2;
-            int   cy = r.Y + r.Height / 2;
+            int cx = r.X + r.Width / 2;
+            int cy = r.Y + r.Height / 2;
             const int S = 5;
 
             if (_isFullscreen)
             {
                 // Inward arrows (shrink to window)
-                FillRect(new Rectangle(cx - S,     cy - S,     S, 2), Color.White);
-                FillRect(new Rectangle(cx - S,     cy - S,     2, S), Color.White);
-                FillRect(new Rectangle(cx + 1,     cy + 1,     S, 2), Color.White);
-                FillRect(new Rectangle(cx + S - 1, cy + 1,     2, S), Color.White);
+                FillRect(new Rectangle(cx - S, cy - S, S, 2), Color.White);
+                FillRect(new Rectangle(cx - S, cy - S, 2, S), Color.White);
+                FillRect(new Rectangle(cx + 1, cy + 1, S, 2), Color.White);
+                FillRect(new Rectangle(cx + S - 1, cy + 1, 2, S), Color.White);
             }
             else
             {
                 // Outward arrows (go fullscreen)
-                FillRect(new Rectangle(r.X + 4,         r.Y + 4,          S, 2), Color.White);
-                FillRect(new Rectangle(r.X + 4,         r.Y + 4,          2, S), Color.White);
+                FillRect(new Rectangle(r.X + 4, r.Y + 4, S, 2), Color.White);
+                FillRect(new Rectangle(r.X + 4, r.Y + 4, 2, S), Color.White);
                 FillRect(new Rectangle(r.Right - 4 - S, r.Bottom - 4 - S, S, 2), Color.White);
-                FillRect(new Rectangle(r.Right - 5,     r.Bottom - 4 - S, 2, S), Color.White);
+                FillRect(new Rectangle(r.Right - 5, r.Bottom - 4 - S, 2, S), Color.White);
             }
 
             // Tooltip on hover

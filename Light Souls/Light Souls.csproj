@@ -11,6 +11,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\Levels\Level5.txt" />
+    <None Remove="Content\Levels\Level6.txt" />
     <None Remove="Content\Music\Castlevania %28NES%29 Music - Stage 01 Vampire Killer.mp3" />
     <None Remove="Content\Platforms\grey_dirt1.png" />
     <None Remove="Content\Platforms\grey_dirt2.png" />
@@ -59,6 +61,12 @@
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Levels\Level5.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Levels\Level6.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Music\Castlevania (NES) Music - Stage 01 Vampire Killer.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

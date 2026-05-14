@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/Soul/6.png</SourceFile>
-  <SourceTime>2026-05-14T13:51:27.1825866+01:00</SourceTime>
+  <SourceTime>2026-05-14T16:58:55.2434871+01:00</SourceTime>
   <DestFile>C:/Users/user/Desktop/Projecto2_TDJ/Light Souls/Content/bin/DesktopGL/Content/Soul/6.xnb</DestFile>
-  <DestTime>2026-05-14T13:51:40.471829+01:00</DestTime>
+  <DestTime>2026-05-14T17:00:11.9067159+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2025-06-02T11:31:02+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

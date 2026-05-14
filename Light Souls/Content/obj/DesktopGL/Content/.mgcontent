@@ -52,37 +52,12 @@
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
-    <File xsi:nil="true" />
     <File>Player/Dead/0</File>
     <File>Player/Dead/1</File>
     <File>Player/Dead/2</File>
     <File>Player/Dead/3</File>
     <File>Player/Dead/4</File>
     <File>Player/Dead/5</File>
-    <File>Player/Dead/0</File>
-    <File>Player/Dead/1</File>
-    <File>Player/Dead/2</File>
-    <File>Player/Dead/3</File>
     <File>Player/Jump/0</File>
     <File>Player/Jump/1</File>
     <File>Player/Jump/2</File>

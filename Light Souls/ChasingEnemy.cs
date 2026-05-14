@@ -7,7 +7,6 @@ namespace Light_Souls
 {
     public sealed class ChasingEnemy
     {
-        private const float PatrolSpeed = 70f;
         private const float ChaseSpeed = 80f;
         private const float Gravity = 1200f;
         private const float AggroRange = 100f;
@@ -27,7 +26,7 @@ namespace Light_Souls
 
         private Vector2 _settledSpawnPosition;
         private bool _hasSettled = false;
-        private float _edgeCheckTimer;           
+        private float _edgeCheckTimer;
 
         private int _direction = 1;
         private float _stunTimer = 0f;
@@ -109,18 +108,32 @@ namespace Light_Souls
             float distX = player.Position.X - Position.X;
             bool isAggro = Math.Abs(distX) < AggroRange;
 
-            if (isAggro) _direction = distX > 0f ? 1 : -1;
-            Velocity.X = _direction * (isAggro ? ChaseSpeed : PatrolSpeed);
+            if (!_hasSettled)
+            {
+                // Ainda a cair — não se move horizontalmente
+                Velocity.X = 0f;
+            }
+            else if (isAggro)
+            {
+                // Chase: move toward player, check edges to avoid falling
+                _direction = distX > 0f ? 1 : -1;
+                Velocity.X = _direction * ChaseSpeed;
+                Position.X += Velocity.X * dt;
+                ResolveHorizontalCollisions(platforms);
 
-            Position.X += Velocity.X * dt;
-            ResolveHorizontalCollisions(platforms, isAggro);
+                if (_edgeCheckTimer <= 0f)
+                    CheckEdgeTurnaround(platforms);
+            }
+            else
+            {
+                // Idle: stand still, no horizontal movement
+                Velocity.X = 0f;
+            }
 
+            // Gravity always applies
             Velocity.Y += Gravity * dt;
             Position.Y += Velocity.Y * dt;
             ResolveVerticalCollisions(platforms);
-
-            if (!isAggro && _edgeCheckTimer <= 0f)
-                CheckEdgeTurnaround(platforms);
 
             Velocity.X *= DampingDecay;
 
@@ -130,7 +143,7 @@ namespace Light_Souls
         private Rectangle GetBounds()
             => new Rectangle((int)Position.X, (int)Position.Y, CurrentWidth, CurrentHeight);
 
-        private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms, bool isChasing)
+        private void ResolveHorizontalCollisions(IReadOnlyList<Platform> platforms)
         {
             Rectangle bounds = GetBounds();
             foreach (var platform in platforms)
@@ -138,7 +151,6 @@ namespace Light_Souls
                 if (!bounds.Intersects(platform.Bounds)) continue;
                 if (Velocity.X > 0f) Position.X = platform.Bounds.Left - CurrentWidth;
                 else if (Velocity.X < 0f) Position.X = platform.Bounds.Right;
-                if (!isChasing) _direction = -_direction;
                 Velocity.X = 0f;
                 break;
             }
@@ -172,6 +184,7 @@ namespace Light_Souls
             foreach (var platform in platforms)
                 if (platform.Bounds.Contains(probeX, probeY)) return;
             _direction = -_direction;
+            _edgeCheckTimer = EdgeCheckCooldown;
         }
     }
 }
